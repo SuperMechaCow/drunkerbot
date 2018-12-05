@@ -1,0 +1,18 @@
+{
+  "name": "drunkerbot",
+  "version": "1.0.0",
+  "description": "For getting drunk and doing dangerous things",
+  "main": "dbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "express": "^4.16.4",
+    "moment": "^2.22.2",
+    "url-exists": "^1.0.3",
+    "winston": "^3.1.0"
+  }
+}
