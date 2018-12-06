@@ -10,6 +10,9 @@ const moment = require('moment');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+//Iterate this each time you update the bot
+const appver = "0004";
+
 //SETTING UO THE DRUNKERBOX VARIABLES
 var drunkerstatus = {
     "state": false,
