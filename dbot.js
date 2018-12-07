@@ -9,9 +9,10 @@ const moment = require('moment');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.use(express.static("public"));
 
 //Iterate this each time you update the bot
-const appver = "0004";
+const appver = "0005";
 
 //SETTING UO THE DRUNKERBOX VARIABLES
 var drunkerstatus = {
@@ -23,22 +24,24 @@ var drunkerstatus = {
     "starttime": "none"
 }
 
-// DevBot
-//const dbHostRoleID = '519573926586875907';
-// DrunkerBot
-const dbHostRoleID = '519566175299174410';
-
 //DevBot
-// READ THE TOKEN TO LOG IN
-// fs.readFile('token.txt', 'utf8', function(err, data) {
-//     if (err) {
-//         return console.log(err);
-//     }
-//     client.login(data);
-// })
+const dbHostRoleID = '519573926586875907';
+const dbTokenFile = 'token_devbot.txt';
 
-//Drunkerbot
-client.login('');
+// DrunkerBot
+//const dbHostRoleID = '519566175299174410';
+//const dbTokenFile = 'token_drubot.txt';
+
+// Login from token file
+fs.readFile(dbTokenFile, 'utf8', function(err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    client.login(data);
+})
+
+// Direct Login
+//client.login('YOUR TOKEN HERE');
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -148,13 +151,15 @@ app.get('/api/status/host', function(req, res) {
 
 // on the request to root (localhost:3000/)
 app.get('/', function(req, res) {
-    //res.render(index)
-    var sendhtml = '<center><h1>Drunkerboxes Live Status: ' + drunkerstatus.state + '</h1>';
-    if (drunkerstatus.state == true) {
-        sendhtml += '<br><br>Host: <img src="' + drunkerstatus.hostpic + '" height=32 width=32/>' + drunkerstatus.host + '<br><br><a href="' + drunkerstatus.url + '">Stream Link</a>';
-    }
-    sendhtml += '</center>'
-    res.send(sendhtml);
+    res.render('index', {
+        drunkerstatus: drunkerstatus
+    });
+    // var sendhtml = '<center><h1>Drunkerboxes Live Status: ' + drunkerstatus.state + '</h1>';
+    // if (drunkerstatus.state == true) {
+    //     sendhtml += '<br><br>Host: <img src="' + drunkerstatus.hostpic + '" height=32 width=32/>' + drunkerstatus.host + '<br><br><a href="' + drunkerstatus.url + '">Stream Link</a>';
+    // }
+    // sendhtml += '</center>'
+    // res.send(sendhtml);
 });
 
 // start the server in the port 3000 !
