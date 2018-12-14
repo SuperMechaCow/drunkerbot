@@ -5,24 +5,33 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const moment = require('moment');
+const bodyParser = require('body-parser');
 //const urlExists = require('url-exists');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 app.use(express.static("public"));
 
 //Iterate this each time you update the bot
-const appver = "0006";
+const appver = "0007";
 
 const PORT = "3000";
 
 //DevBot
-// const dbHostRoleID = '519573926586875907';
-// const dbTokenFile = 'token_devbot.txt';
-
+// const config.dbHostRoleID = '519573926586875907';
+// const config.dbAlertsRoleID = '522590429615489044';
 // DrunkerBot
-const dbHostRoleID = '519566175299174410';
-const dbTokenFile = 'token_drubot.txt';
+// const config.dbHostRoleID = '519566175299174410';
+// const config.dbAlertsRoleID = '521857202483625996';
+
+const dbTokenFile = 'config.json';
+const dbDataFile = 'dbdbase.json';
+
+var config = null;
 
 //SETTING UP THE DRUNKERBOX VARIABLES
 var drunkerstatus = {
@@ -39,7 +48,18 @@ fs.readFile(dbTokenFile, 'utf8', function(err, data) {
     if (err) {
         return console.log(err);
     }
-    client.login(data);
+    config = JSON.parse(data);
+    client.login(config.token);
+})
+
+// Load "database"
+
+var dbdbase;
+fs.readFile(dbDataFile, 'utf8', function(err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    dbdbase = JSON.parse(data);
 })
 
 // Direct Login
@@ -50,6 +70,12 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+
+    //TO DO HERE: Message counter that levels people up and gives extr points for helpful emoji reactions
+
+
+
+    //TO DO HERE: Allow people to sign up to be a fan
 
     const prefix = '!';
 
@@ -63,12 +89,15 @@ client.on('message', message => {
         }
     }
 
+    if (command === 'roll') {
+        message.channel.send(message.author.username + ' rolled a ' + (Math.round(Math.random() * (20 - 1) + 1)) + ' out of 20.');
+    }
+
     if (command === 'db') {
         switch (args[0]) {
             case 'start':
                 //see if there's more arguments
                 //should read YOUR discord name and have memorized your youtube link
-                //the host should be put in it's own group
                 if (drunkerstatus.state != "false") {
                     if (args[1] != null) {
                         drunkerstatus.url = args[1];
@@ -80,8 +109,8 @@ client.on('message', message => {
                     // I commented out nicknames until I can figure out how to stop it from returning "null"
                     // console.log(message.member.nickname + " started a drunkerbox");
                     console.log(message.author.username + " started a drunkerbox");
-                    message.channel.send(message.author + " started a drunkerbox");
-                    message.member.addRole(dbHostRoleID).catch(console.error);
+                    message.channel.send(message.guild.roles.get(config.dbAlertsRoleID).toString() + "\n" + message.author + " started a drunkerbox!");
+                    message.member.addRole(config.dbHostRoleID).catch(console.error);
                     // drunkerstatus.host = message.member.nickname + "#" + message.author.discriminator;
                     drunkerstatus.host = message.author.username + "#" + message.author.discriminator;
                     drunkerstatus.hostid = message.author.id;
@@ -94,12 +123,12 @@ client.on('message', message => {
                 break;
             case 'stop':
                 if (drunkerstatus.state) {
-                    if (drunkerstatus.hostid == message.author.id) {
+                    if (message.member.roles.has(config.serverModID) || drunkerstatus.hostid == message.author.id) {
                         drunkerstatus.state = false;
                         // console.log(message.member.nickname + " stopped the drunkerbox");
                         console.log(message.author.username + " stopped the drunkerbox");
                         message.channel.send(message.author + " stopped the drunkerbox");
-                        message.member.removeRole(dbHostRoleID).catch(console.error);
+                        message.member.removeRole(config.dbHostRoleID).catch(console.error);
                         drunkerstatus.host = "none";
                         drunkerstatus.hostid = "none";
                         drunkerstatus.hostpic = "none";
@@ -134,6 +163,50 @@ client.on('message', message => {
                 message.channel.send({
                     embed
                 });
+                break;
+            case 'alerts':
+                var findfanid = null; // Set this to nothing. If it changes in this for loop we've found a match
+                for (var index = 0; index < dbdbase.fan.length; index++) {
+                    // Run this loop as many times as there are entrie in the "database"
+                    if (dbdbase.fan[index].fanid == (message.author.username + "#" + message.author.discriminator)) {
+                        // If we find a saved fanid that matches the user who sent the command, save the index for later
+                        findfanid = index;
+                    }
+                }
+                if (findfanid !== null) { // If we found a matching index, this will not be null anymore
+                    dbdbase.fan[findfanid].alerts = !dbdbase.fan[findfanid].alerts; // Make the alerts setting be whatever it isn't now
+                    if (dbdbase.fan[findfanid].alerts) { // If we just turned alerts on, add them to the alert group
+                        message.member.addRole(config.dbAlertsRoleID).catch(console.error);
+                    } else { // Remove them from alert group otherwise
+                        message.member.removeRole(config.dbAlertsRoleID).catch(console.error);
+                    }
+                    fs.writeFile(dbDataFile, JSON.stringify(dbdbase), 'utf8', (err) => {
+                        // Write the changes to the database file
+                        if (err) { // If there's an error
+                            console.log(err); // Then log it
+                        } else { // Otherwise...
+                            // Log this change and let the user know
+                            console.log(message.author.username + " set their alerts to " + dbdbase.fan[findfanid].alerts);
+                            message.author.send("You set your alerts to " + dbdbase.fan[findfanid].alerts);
+                        }
+                    });
+                } else { // Otherwise we'll have to create a new profile because this user is not in the database
+                    dbdbase.fan[dbdbase.fan.length] = { //.length creates a new entry at the end of the array
+                        "fanid": message.author.username + "#" + message.author.discriminator,
+                        "alerts": true
+                    };
+                    fs.writeFile(dbDataFile, JSON.stringify(dbdbase), 'utf8', (err) => { // Save this change to the file
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            // Let the user know if it succeeded
+                            message.member.addRole(config.dbAlertsRoleID).catch(console.error);
+                            console.log("Created a new profile for: " + message.author.username + "\n");
+                            console.log(dbdbase.fan[dbdbase.fan.length - 1]);
+                            message.author.send("Hi! I created a new profile for you!\n\n Your alerts are set to " + dbdbase.fan[dbdbase.fan.length - 1].alerts);
+                        }
+                    });
+                }
                 break;
             case 'help':
                 var statusdesc = "**!db start <url>**\nStart a drunkerbox stream and link tothe provided <url>\n";
@@ -191,6 +264,10 @@ app.get('/', function(req, res) {
         drunkerstatus: drunkerstatus
     });
 });
+
+app.post('/webhooks', function(req, res) {
+    console.log(req.body);
+})
 
 // start the server in the port 3000 !
 app.listen(PORT, function() {
