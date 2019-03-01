@@ -1,0 +1,41 @@
+/*
+██       █████  ██    ██  ██████  ██    ██ ████████
+██      ██   ██  ██  ██  ██    ██ ██    ██    ██
+██      ███████   ████   ██    ██ ██    ██    ██
+██      ██   ██    ██    ██    ██ ██    ██    ██
+███████ ██   ██    ██     ██████   ██████     ██
+*/
+
+.ui-accordion .ui-accordion-content {
+    padding: 0px;
+    overflow: hidden;
+}
+
+* {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#bodyholder {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#livebox, #linksbox {
+    width: 80%;
+    overflow: hidden;
+}
+
+body {
+}
+
+#banner {
+}
+
+h1 {
+}
+
+p {
+}

@@ -2,20 +2,40 @@ doctype html
 html
     head
         title='Drunkerbot Status Page'
-        link(rel='stylesheet', href='/stylesheets/layout.css')
         //- link(rel='stylesheet', title='light' href='/stylesheets/style_light.css')
-        link(rel='stylesheet', title='dark' href='/stylesheets/style_dark.css')
+        link(rel='stylesheet', href='/stylesheets/jquery/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/style_dark.css')
+        link(rel='stylesheet', href='/stylesheets/layout.css')
+        script(src='/scripts/moment.js')
+        script(src='https://code.jquery.com/jquery-1.12.4.js')
+        script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
         script.
             var drunkerstatus = !{JSON.stringify(drunkerstatus)};
+            var dboxes = !{JSON.stringify(dboxes)};
+            $( function() {
+                $( "#accordion" ).accordion();
+            } );
     body
-        center
-            h1 Drunkerboxes Live Status: !{drunkerstatus.state}
-            script.
-                if (drunkerstatus.state == true) {
-                    document.write('<br><br>Host: <img src="' + drunkerstatus.hostpic + '" height=32 width=32/> ' + drunkerstatus.host + '<br><br><a href="' + drunkerstatus.url + '">Stream Link</a>');
-                }
-            br
-            a.href='https://github.com/HardWareFlare/drunkerbot'
-                DrunkerBot Code Repo
-            a.href='https://github.com/IntPirate/DrunkerBoxes'
-                DrunkerTracker Code Repo
+        div#bodyholder
+            div#banner
+                h1= 'Drunkerboxes Live Status: ' + drunkerstatus.state
+            if (drunkerstatus.state == true)
+                div#livebox
+                    img(src=drunkerstatus.hostpic height='32' width='32')
+                    a(href=drunkerstatus.url) Stream Link
+                    p= 'Host: ' + drunkerstatus.host + ' '
+            div#linksbox
+                p
+                    a(href='https://github.com/HardWareFlare/drunkerbot') DrunkerBot Code Repo
+                    br
+                    a(href='https://github.com/IntPirate/DrunkerBoxes') DrunkerTracker Code Repo
+            div#accordion
+                for value, index in dboxes
+                    h3= '#' + index + ' streamed on '
+                        script= 'document.write(moment.unix(' + value.starttime + ').format(\'M/D/YY HH:MM\'));'
+                    div
+                        div
+                            p= value.host
+                                img(height='32', width='32' src=value.hostpic)
+                                a(href=value.url) Link
+                

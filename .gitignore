@@ -3,3 +3,4 @@ token_drubot.txt
 token.txt
 config.json
 dbdbase.json
+data/dbdbase.db
