@@ -15,6 +15,9 @@ html
             $( function() {
                 $( "#accordion" ).accordion();
             } );
+            $( function() {
+                $( "#tabs" ).tabs();
+            } );
     body
         div#bodyholder
             div#banner
@@ -23,19 +26,53 @@ html
                 div#livebox
                     img(src=drunkerstatus.hostpic height='32' width='32')
                     a(href=drunkerstatus.url) Stream Link
-                    p= 'Host: ' + drunkerstatus.host + ' '
+                    p= 'Host: ' + drunkerstatus.hostname + ' '
             div#linksbox
                 p
                     a(href='https://github.com/HardWareFlare/drunkerbot') DrunkerBot Code Repo
                     br
                     a(href='https://github.com/IntPirate/DrunkerBoxes') DrunkerTracker Code Repo
-            div#accordion
-                for value, index in dboxes
-                    h3= '#' + index + ' streamed on '
-                        script= 'document.write(moment.unix(' + value.starttime + ').format(\'M/D/YY HH:MM\'));'
+            div#tabs
+                ul
+                    li
+                        a(href='#tabs-1') Streams
+                    li
+                        a(href='#tabs-2') Top 10
+                    li
+                        a(href='#tabs-3') Stats
+                div#tabs-1
+                    div#accordion
+                        for value, index in dboxes
+                            h3= '#' + (dboxes.length - index) + ' streamed on '
+                                script= 'document.write(moment.unix(' + value.starttime + ').format(\'M/D/YY HH:mm\'));'
+                            
+                            div
+                                div
+                                    p= value.hostname
+                                        img(height='32', width='32' src=value.hostpic)
+                                        a(href=value.url) Link
+                                    if value.stoptime !== null
+                                        p
+                                            |Finished on: 
+                                            script= 'document.write(moment.unix(' + value.stoptime + ').format(\'M/D/YY HH:mm\'));'
+                                            
+                div#tabs-2
+                    div.dootRow
+                        div.dootCell.dootCellName= 'User'
+                        div.dootCell.dootCellDouble= 'Doots'
+                        div.dootCell= 'Messages'
+                    for value, index in doots
+                        div.dootRow
+                            div.dootCell.dootCellName= doots[index].fanname
+                            div.dootCell.updootText.dootCellAlt= doots[index].updootcount/100
+                            div.dootCell.downdootText= doots[index].downdootcount/100
+                            div.dootCell.dootCellAlt= doots[index].msgcount
+                div#tabs-3
                     div
-                        div
-                            p= value.host
-                                img(height='32', width='32' src=value.hostpic)
-                                a(href=value.url) Link
-                
+                        p= 'App Version: ' + dbotstats.appver
+                        p= 'Times Started: ' + dbotstats.restarts
+                        p
+                            |Last Started: 
+                            script= 'document.write(moment.unix(' + dbotstats.laststart + ').format(\'M/D/YY HH:mm\'));'
+                            
+                        p= 'Website Hits: ' + dbotstats.webhits

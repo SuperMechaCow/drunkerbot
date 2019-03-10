@@ -5,6 +5,9 @@
 ██      ██   ██    ██    ██    ██ ██    ██    ██
 ███████ ██   ██    ██     ██████   ██████     ██
 */
+.ui-tabs .ui-tabs-nav {
+    padding: .2em .2em .2em;
+}
 
 .ui-accordion .ui-accordion-content {
     padding: 0px;
@@ -28,14 +31,38 @@
     overflow: hidden;
 }
 
-body {
+body {}
+
+#banner {}
+
+h1 {}
+
+p {}
+
+.dootRow {
+    margin: 2px;
+    ;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
 }
 
-#banner {
+.dootCell {
+    min-width: 12%;
+    display: inline-block;
+    overflow: hidden;
+    margin: auto;
+    padding: 4px;
 }
 
-h1 {
+.dootCellName {
+    width: 24%;
+    flex-grow: 1;
+    text-align: left;
 }
 
-p {
+.dootCellAlt {}
+
+.dootCellDouble {
+    min-width: 24%;
 }

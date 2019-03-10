@@ -1,5 +1,10 @@
+.ui-corner-top, .ui-corner-br, .ui-corner-bl {
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
 * {
-        font-family: trebuchet ms;
+    font-family: trebuchet ms;
 }
 
 body {
@@ -8,12 +13,32 @@ body {
 }
 
 #banner {
-        background-color: #660000;
+    background-color: #660000;
 }
 
 h1 {
     color: #DEDEDE;
 }
+
 a {
     color: #FFFFFF;
+}
+
+.dootRow {}
+
+.dootCell {
+    background-color: #444444;
+}
+.dootCellName {
+}
+.dootCellAlt {
+    background-color: #666666;
+}
+
+.downdootText {
+    color: #9999FF;
+}
+
+.updootText {
+    color: #FFAA99;
 }
