@@ -20,11 +20,20 @@ html
             } );
     body
         div#bodyholder
+            //- div#UserData
+                if logindata != undefined
+                    h1= logindata.username
+                        img(height='32', width='32', src='https://cdn.discordapp.com/avatars/' + logindata.id + '/' + logindata.avatar + '.png')
+                        div.discordLogin
+                            a(href='/') Logout
+                else
+                    div.discordLogin
+                        a(href='/api/discord/login') Discord Login
             div#banner
                 h1= 'Drunkerboxes Live Status: ' + drunkerstatus.state
             if (drunkerstatus.state == true)
                 div#livebox
-                    img(src=drunkerstatus.hostpic height='32' width='32')
+                    img(src=drunkerstatus.userAvatar height='32' width='32')
                     a(href=drunkerstatus.url) Stream Link
                     p= 'Host: ' + drunkerstatus.hostname + ' '
             div#linksbox
@@ -44,18 +53,23 @@ html
                     div#accordion
                         for value, index in dboxes
                             h3= '#' + (dboxes.length - index) + ' streamed on '
-                                script= 'document.write(moment.unix(' + value.starttime + ').format(\'M/D/YY HH:mm\'));'
-                            
+                                script= 'document.write(moment.unix(' + value.start + ').format(\'M/D/YY HH:mm\'));'
+
                             div
                                 div
                                     p= value.hostname
-                                        img(height='32', width='32' src=value.hostpic)
+                                        //This needs to be changed so it shows the user's most recent avatar
+                                        img(height='32', width='32' src=value.userAvatar)
                                         a(href=value.url) Link
                                     if value.stoptime !== null
                                         p
                                             |Finished on: 
-                                            script= 'document.write(moment.unix(' + value.stoptime + ').format(\'M/D/YY HH:mm\'));'
+                                            script= 'document.write(moment.unix(' + value.end + ').format(\'M/D/YY HH:mm\'));'
                                             
+                                    if logindata != undefined && value.hostid == logindata.id
+                                        p
+                                            a(href='#') EDIT
+
                 div#tabs-2
                     div.dootRow
                         div.dootCell.dootCellName= 'User'
@@ -63,16 +77,16 @@ html
                         div.dootCell= 'Messages'
                     for value, index in doots
                         div.dootRow
-                            div.dootCell.dootCellName= doots[index].fanname
-                            div.dootCell.updootText.dootCellAlt= doots[index].updootcount/100
-                            div.dootCell.downdootText= doots[index].downdootcount/100
-                            div.dootCell.dootCellAlt= doots[index].msgcount
+                            div.dootCell.dootCellName= doots[index].username
+                            div.dootCell.updootText.dootCellAlt= doots[index].updoots
+                            div.dootCell.downdootText= doots[index].downdoots
+                            div.dootCell.dootCellAlt= doots[index].messages
                 div#tabs-3
                     div
                         p= 'App Version: ' + dbotstats.appver
                         p= 'Times Started: ' + dbotstats.restarts
                         p
-                            |Last Started: 
+                            |Last Started:
                             script= 'document.write(moment.unix(' + dbotstats.laststart + ').format(\'M/D/YY HH:mm\'));'
-                            
-                        p= 'Website Hits: ' + dbotstats.webhits
+
+                        p= 'Website Hits: ' + (dbotstats.webhits + 1)

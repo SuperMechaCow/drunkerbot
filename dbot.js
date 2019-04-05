@@ -1,6 +1,6 @@
 //Load Discord library and create a new client
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const discordClient = new Discord.Client();
 //Express framework
 const express = require('express');
 const app = express();
@@ -12,11 +12,30 @@ const fs = require('fs');
 const moment = require('moment');
 //Parses data from http request bodies
 const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 //Interfaces with sqlite3 database
 const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database('data/dbdbase.db');
+// const db = new sqlite3.Database('data/dbdbase.db');
+const db = new sqlite3.Database('data/botbase.db');
+
 //Validates URLs
 //const urlExists = require('url-exists');
+//Reddit wrapper and API library
+var Snooper = require('reddit-snooper')
+snooper = new Snooper({
+    // credential information is not needed for snooper.watcher
+    // username:
+    // password:
+    // app_id:
+    // api_secret:
+    //user_agent: 'drunkerbot',
+    automatic_retries: true, // automatically handles condition when reddit says 'you are doing this too much'
+    api_requests_per_minute: 60 // api requests will be spread out in order to play nicely with Reddit
+})
+
+// Create a Snoostorm CommentStream with the specified options
+// const RcommentClient = new Snoostorm.CommentStream(redditConfig);
+
 //For detailed logging
 const {
     createLogger,
@@ -45,67 +64,78 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
+// Routes
+app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "0017";
+const appver = "0020";
 
 const PORT = "3000";
 
 const dbTokenFile = 'config.json';
 
-const dootee_bonus = 100;
-const dooter_bonus = 25;
+const TIMERRESET = 15; // Number of seconds before getting more exp
+const LEVELMULTIPLIER = 100; // You need this much experience * your current level to level up
+const MAXEXPGAIN = 5; // Each time you gain exp, it's between 0 and this number
+const EXPMULTIPLIER = 5; // Then it's multiplied by this number
+
+const DOOTEE_BONUS = 1;
+const DOOTER_BONUS = 0.25;
 
 const defaultResults = {
     "state": false,
     "host": "none",
-    "hostid": "none",
-    "hostpic": "none",
+    "userdiscordID": "none",
+    "userAvatar": "none",
     "url": "none",
-    "starttime": "none",
-    "stoptime": "none"
+    "start": "none",
+    "end": "none"
 }
 
 var config = null;
 
 // Login from token file
 // This needs to be changed to a envvar or db entry
-fs.readFile(dbTokenFile, 'utf8', function(err, data) {
-    if (err) {
-        return logger.error(err);
-    }
-    config = JSON.parse(data);
-    client.login(config.token);
-})
+db.get("SELECT * FROM BOTSTATS;", function(err, data) {
+    discordClient.login(data.secret);
+});
 
-client.on('ready', () => {
-    logger.verbose(`Logged in as ${client.user.tag}!`);
-    client.user.setStatus('idle');
+// fs.readFile(dbTokenFile, 'utf8', function(err, data) {
+//     if (err) {
+//         return logger.error(err);
+//     }
+//     config = JSON.parse(data);
+//     discordClient.login(config.token);
+// })
+
+discordClient.on('ready', () => {
+    logger.verbose(`Logged in as ${discordClient.user.tag}!`);
+    discordClient.user.setStatus('idle');
 });
 
 // start the server in the port 3000 !
 app.listen(PORT, function() {
     logger.verbose('Listening on port ' + PORT + '.');
     //Mid-drunkerbox stream crash recovery
-    db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
+    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
         if (results != undefined) {
-            db.run("UPDATE dboxes SET stoptime = " + moment().unix() + ", state = 0 WHERE state = 1;");
+            db.run("UPDATE STREAM SET end = " + moment().unix() + ", state = 0 WHERE state = 1;");
             logger.warn("Old live-stream was stopped.");
         }
     });
-    db.get("SELECT * FROM dbotstats;", function(err, results) {
+    db.get("SELECT * FROM BOTSTATS;", function(err, results) {
         if (results != undefined) {
-            db.run("UPDATE dbotstats SET laststart = " + moment().unix() + ", restarts = " + parseInt(results.restarts + 1) + ", appver = " + appver + ";");
+            db.run("UPDATE BOTSTATS SET laststart = " + moment().unix() + ", restarts = " + parseInt(results.restarts + 1) + ", appver = " + appver + ";");
             logger.verbose("Running appver " + appver);
         } else {
-            logger.error("Um... No dbotstat table in database? Weird.")
+            logger.error("Um... No BOTSTATS table in database? Weird.")
         }
     });
 });
 
 //Call this to create a new user in the database
 function db_newuser(newuserauthor, newusermember) {
-    db.run("INSERT INTO fans (fanname, alerts, msgcount, updootcount, downdootcount, updooty, downdooty) VALUES (\'" + newuserauthor.username + "#" + newuserauthor.discriminator + "\', 0, 1, 0, 0, 0, 0);");
+    db.run("INSERT INTO USER (discordID, alerts, messages, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', 0, 1, 0, 0, 0, 0);");
     logger.verbose("Created a new profile for: " + newuserauthor.username + "\n");
     // Let the user know if it succeeded
     //newusermember.addRole(config.dbAlertsRoleID).catch(console.error);
@@ -120,42 +150,78 @@ function db_newuser(newuserauthor, newusermember) {
  ██████ ██   ██ ███████ ███████      ██████  ██          ██████   ██████   ██████     ██       ██
 */
 
-client.on('messageReactionAdd', (reaction, user) => {
+discordClient.on('messageReactionAdd', (reaction, user) => {
     if (reaction.message.author != reaction.users.last()) {
-        doot(reaction.message.author, reaction.emoji.name, dootee_bonus);
-        doot(user, reaction.emoji.name, dooter_bonus);
+        doot(reaction.message.author, reaction.emoji.name, DOOTEE_BONUS);
+        doot(user, reaction.emoji.name, DOOTER_BONUS);
     }
 });
 
-client.on('messageReactionRemove', (reaction, user) => {
+discordClient.on('messageReactionRemove', (reaction, user) => {
     if (reaction.message.author != reaction.users.last()) {
-        doot(reaction.message.author, reaction.emoji.name, dootee_bonus * -1);
-        doot(user, reaction.emoji.name, dooter_bonus * -1);
+        doot(reaction.message.author, reaction.emoji.name, DOOTEE_BONUS * -1);
+        doot(user, reaction.emoji.name, DOOTER_BONUS * -1);
     }
 });
 
-client.on('messageReactionRemoveAll', (reaction, user) => {
+discordClient.on('messageReactionRemoveAll', (reaction, user) => {
     //Learn how this works
 });
 
 function doot(dootUser, dootemoji, adjust) {
     //This is sloppy code, I know.
-    if (dootemoji === "upvote" || dootemoji === "downvote") {
+    if (dootemoji === "upvote" || dootemoji === "downvote" || dootemoji === "updoot" || dootemoji === "downdoot") {
         //Find user in database (create new function that does this)
-        db.all("SELECT * FROM fans WHERE fanname = \'" + dootUser.username + "#" + dootUser.discriminator + "\';", function(err, results) {
+        db.all("SELECT * FROM USER WHERE discordID = \'" + dootUser.id + "\';", function(err, results) {
             if (results == "") {
-                logger.warn("Couldn't find that user: " + dootUser.username + "#" + dootUser.discriminator);
-                db_newuser(message.author, message.member);
+                logger.warn("Couldn't find that user: " + dootUser.id + "#" + dootUser.discriminator);
+                db_newuser(dootUser);
             }
             //save to db
             if (dootemoji === "upvote") {
-                db.run("UPDATE fans SET updootcount = " + (results[0].updootcount + adjust) + " WHERE fanname = \'" + dootUser.username + "#" + dootUser.discriminator + "\';");
+                db.run("UPDATE USER SET updoots = " + (results[0].updoots + adjust) + " WHERE discordID = \'" + dootUser.id + "\';");
             }
             if (dootemoji === "downvote") {
-                db.run("UPDATE fans SET downdootcount = " + (results[0].downdootcount + adjust) + " WHERE fanname = \'" + dootUser.username + "#" + dootUser.discriminator + "\';");
+                db.run("UPDATE USER SET downdoots = " + (results[0].downdoots + adjust) + " WHERE discordID = \'" + dootUser.id + "\';");
             }
         });
     }
+}
+
+/*
+██████  ███████ ██████  ██████  ██ ████████     ███████ ███    ██  ██████   ██████  ██████  ███████ ██████
+██   ██ ██      ██   ██ ██   ██ ██    ██        ██      ████   ██ ██    ██ ██    ██ ██   ██ ██      ██   ██
+██████  █████   ██   ██ ██   ██ ██    ██        ███████ ██ ██  ██ ██    ██ ██    ██ ██████  █████   ██████
+██   ██ ██      ██   ██ ██   ██ ██    ██             ██ ██  ██ ██ ██    ██ ██    ██ ██      ██      ██   ██
+██   ██ ███████ ██████  ██████  ██    ██        ███████ ██   ████  ██████   ██████  ██      ███████ ██   ██
+*/
+
+snooper.watcher.getCommentWatcher('hardwareflare').on('comment', function(comment) {
+    newsnoo(comment, 'comment');
+});
+snooper.watcher.getPostWatcher('hardwareflare').on('post', function(post) {
+    newsnoo(post, 'post');
+});
+
+function newsnoo(data, datatype) {
+    console.log('/u/' + data.data.author + ' made a new ' + datatype + ':');
+    //console.log(data.data);
+    var embed = new Discord.RichEmbed();
+    if (datatype == 'comment') {
+        var statusdesc = '\`\`\`' + data.data.body + '\`\`\`\n';
+        embed.addField(data.data.link_title, statusdesc);
+    } else if (datatype == 'post') {
+        var statusdesc = '\`\`\`' + data.data.selftext + '\`\`\`\n';
+        embed.addField(data.data.title, statusdesc);
+    }
+    //embed.setImage('https://seeklogo.com/images/R/reddit-logo-8ABF8F5F2B-seeklogo.com.png');
+    embed.setTitle('NEW SNOO!')
+    embed.setURL('https://www.reddit.com' + data.data.permalink);
+    embed.setColor('RED');
+    embed.setFooter('/u/' + data.data.author)
+    discordClient.channels.find(channel => channel.id === '425737169676533760').send({
+        embed
+    });
 }
 
 /*
@@ -166,9 +232,7 @@ function doot(dootUser, dootemoji, adjust) {
 ██████  ██ ███████  ██████  ██████  ██   ██ ██████      ██      ██ ███████ ███████ ███████ ██   ██  ██████  ███████ ███████
 */
 
-client.on('message', message => {
-
-    logger.debug(message.author.id);
+discordClient.on('message', message => {
 
     /*
     ███    ███ ███████ ███████ ███████  █████   ██████  ███████      ██████  ██████  ██    ██ ███    ██ ████████ ███████ ██████
@@ -179,16 +243,35 @@ client.on('message', message => {
     */
 
     //USERS SHOULD BE ABLE TO OPT OUT OF THIS AND ALL TRACKING
-    db.all("SELECT * FROM fans WHERE fanname = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, results) {
-        if (results == "") {
+    db.get("SELECT * FROM USER WHERE discordID = \'" + message.author.id + "\';", function(err, results) {
+        if (results == undefined) {
             logger.warn("Couldn't find that user");
-            db_newuser(message.author, message.member);
+            db.get("SELECT * FROM USER WHERE username = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, RECOVERres) {
+
+
+                db_newuser(message.author, message.member);
+            });
         } else {
-            //KEEP THIS LINE OF CODE IN UNTIL EVERYONE'S PROFILE IS POPULATED WITH ID'S
-            if (results.id == undefined) {
-                db.run("UPDATE fans SET id = " + message.author.id + " WHERE fanname = \'" + message.author.username + "#" + message.author.discriminator + "\';");
+            if (message.author.username != results.username) {
+                db.run("UPDATE USER SET username = \'" + message.author.username + "\' WHERE discordID = \'" + message.author.id + "\';");
             }
-            db.run("UPDATE fans SET msgcount = " + (results[0].msgcount + 1) + " WHERE fanname = \'" + message.author.username + "#" + message.author.discriminator + "\';");
+            if (moment().unix() - results.lastmessage < TIMERRESET) {
+                db.run("UPDATE USER SET messages = messages + 1 WHERE discordID = \'" + message.author.id + "\';");
+            } else {
+                var expbonus = (Math.floor(Math.random() * (MAXEXPGAIN + 1)) * EXPMULTIPLIER);
+                db.run("UPDATE USER SET messages = messages + 1, lastmessage = " + moment().unix() + ", exp = exp + " + expbonus + " WHERE discordID = \'" + results.discordID + "\';", function() {
+                    //Check to see if they leveled up here
+                    var levelCount = 0;
+                    var expCount = 0;
+                    while (results.exp > expCount) {
+                        levelCount++;
+                        expCount = expCount + (levelCount * LEVELMULTIPLIER);
+                    }
+                    if (levelCount > results.lastlevel) {
+                        db.run("UPDATE USER SET lastlevel = " + levelCount + " WHERE discordID = \'" + results.discordID + "\';");
+                    }
+                });
+            }
         }
     });
 
@@ -231,7 +314,54 @@ client.on('message', message => {
 
             case 'test':
 
+                // snooper.api.post("/api/submit", {
+                //     api_type: "json",
+                //     kind: 'self',
+                //     sr: 'drunkerbot',
+                //     title: 'Hello World',
+                //     text: 'I\'m sending you some sunshine!'
+                // }, function(err, statusCode, data) {
+                //     if (!err) console.log('Just posted to reddit')
+                // })
+
                 break;
+
+                /*
+                ██████  ██    ██ ███    ██
+                ██   ██ ██    ██ ████   ██
+                ██████  ██    ██ ██ ██  ██
+                ██   ██ ██    ██ ██  ██ ██
+                ██   ██  ██████  ██   ████
+                */
+
+                //     // THIS ISN'T ZOMBIE CODE!
+                //     // This code is very functional, but allows users to run totally arbitrary code from the discord channel
+                //     // Consider the commenting out this code as the "Safety On"
+                // case 'run':
+                //     if (message.member.permissions.has('ADMINISTRATOR')) {
+                //
+                //         var commandstore = message.content;
+                //
+                //         var myRegexp = /```([^```]*)```/g;
+                //         var arr = [];
+                //
+                //         //Iterate through results of regex search
+                //         do {
+                //             var match = myRegexp.exec(commandstore);
+                //             if (match != null) {
+                //                 //Each call to exec returns the next match as an array where index 1
+                //                 //is the captured group if it exists and index 0 is the text matched
+                //                 arr.push(match[1] ? match[1] : match[0]);
+                //             }
+                //         } while (match != null);
+                //
+                //         //console.log(arr.toString());
+                //         eval(arr.toString());
+                //     } else {
+                //         message.channel.send("This command can only be used by Administrators on this server. It really shouldn't be used by anybody ever. It shouldn't exist. This is irresponsible.")
+                //     }
+                //
+                //     break;
 
                 /*
                 ███████ ████████  █████  ██████  ████████
@@ -242,36 +372,37 @@ client.on('message', message => {
                 */
 
             case 'start':
-
-                db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
-                    if (results == undefined) {
-                        if (args[1] != null) {
-                            //Validate the the URL here
-                            db.run("INSERT INTO dboxes (state, hostname, hostid, hostpic, url, starttime) VALUES (1, \'" + message.author.username + "#" + message.author.discriminator + "\', \'" + message.author.id + "\', \'" + message.author.displayAvatarURL + "\', \'" + args[1] + "\', " + moment().unix() + ");");
-                            logger.verbose(message.author.username + "#" + message.author.discriminator + " started a drunkerbox");
-                            message.member.addRole(config.dbHostRoleID);
-                            var embed = new Discord.RichEmbed();
-                            var statusdesc = message.guild.roles.get(config.dbAlertsRoleID).toString() + "\n\n" + message.author.username + "#" + message.author.discriminator + " started a Drunkerbox Livestream!\n\n" + args[1];
-                            embed.setImage(message.author.displayAvatarURL);
-                            embed.addField("Drunkerbox Status", statusdesc);
-                            message.channel.send({
-                                embed
-                            });
-                            client.user.setStatus('available')
-                            client.user.setPresence({
-                                game: {
-                                    name: 'DrunkerBox',
-                                    type: "STREAMING",
-                                    url: args[1]
-                                }
-                            });
+                db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
+                    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+                        if (results == undefined) {
+                            if (args[1] != null) {
+                                //Validate the the URL here
+                                db.run("INSERT INTO STREAM (state, serverdiscordID, userdiscordID, userAvatar, url, start) VALUES (1, \'" + message.guild.id + "\', \'" + message.author.id + "\', \'" + message.author.displayAvatarURL + "\', \'" + args[1] + "\', " + moment().unix() + ");");
+                                logger.verbose(message.author.username + "#" + message.author.discriminator + " started a drunkerbox");
+                                message.member.addRole(SERVERres.hostRoleID);
+                                var embed = new Discord.RichEmbed();
+                                var statusdesc = message.guild.roles.get(SERVERres.alertRoleID).toString() + "\n\n" + message.author.username + "#" + message.author.discriminator + " started a Drunkerbox Livestream!\n\n" + args[1];
+                                embed.setImage(message.author.displayAvatarURL);
+                                embed.addField("Drunkerbox Status", statusdesc);
+                                message.channel.send({
+                                    embed
+                                });
+                                discordClient.user.setStatus('available');
+                                discordClient.user.setPresence({
+                                    game: {
+                                        name: 'DrunkerBox',
+                                        type: "STREAMING",
+                                        url: args[1]
+                                    }
+                                });
+                            } else {
+                                logger.verbose(message.author.username + "#" + message.author.discriminator + " attempted to start a drunkerbox, but did not set a URL.")
+                                message.author.send("Hey! You need to set the URL for the livestream!")
+                            }
                         } else {
-                            logger.verbose(message.author.username + "#" + message.author.discriminator + " attempted to start a drunkerbox, but did not set a URL.")
-                            message.author.send("Hey! You need to set the URL for the livestream!")
+                            logger.verbose("Stream is already active.");
                         }
-                    } else {
-                        logger.verbose("Stream is already active.");
-                    }
+                    });
                 });
 
                 break;
@@ -285,28 +416,30 @@ client.on('message', message => {
                 */
 
             case 'stop':
-                db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
-                    if (message.member.roles.has(config.serverModID) || drunkerstatus.hostid == message.author.id) {
-                        if (results != undefined) {
-                            db.run("UPDATE dboxes SET stoptime = " + moment().unix() + ", state = 0 WHERE state = 1;");
-                            logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
-                            message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
-                            message.member.removeRole(config.dbHostRoleID).catch(console.error);
-                            client.user.setStatus('idle')
-                            client.user.setPresence({
-                                game: {
-                                    name: 'none',
-                                    type: "none",
-                                    url: 'none'
-                                }
-                            });
+                db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
+                    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+                        if (message.member.roles.has(SERVERres.modRoleID) || drunkerstatus.userdiscordID == message.author.id) {
+                            if (results != undefined) {
+                                db.run("UPDATE STREAM SET end = " + moment().unix() + ", state = 0 WHERE state = 1;");
+                                logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
+                                message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
+                                message.member.removeRole(SERVERres.hostRoleID).catch(console.error);
+                                discordClient.user.setStatus('idle')
+                                discordClient.user.setPresence({
+                                    game: {
+                                        name: 'none',
+                                        type: "none",
+                                        url: 'none'
+                                    }
+                                });
+                            } else {
+                                message.channel.send("Stream is not currently active.");
+                                logger.verbose("Stream is not currently active.");
+                            }
                         } else {
-                            message.channel.send("Stream is not currently active.");
-                            logger.verbose("Stream is not currently active.");
+                            message.channel.send("Nice try, but only the Host or a Moderator can stop a drunkerbox stream!")
                         }
-                    } else {
-                        message.channel.send("Nice try, but only the Host or a Moderator can stop a drunkerbox stream!")
-                    }
+                    });
                 });
                 break;
 
@@ -319,11 +452,11 @@ client.on('message', message => {
                 */
 
             case 'status':
-                db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
+                db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
                     var embed = new Discord.RichEmbed();
                     if (results != undefined) {
-                        var statusdesc = "Host: " + results.hostname + "\n Time started: " + moment.unix(results.starttime).format("MMM DD, hh:mm");
-                        embed.setImage(results.hostpic);
+                        var statusdesc = "Host: " + results.hostname + "\n Time started: " + moment.unix(results.start).format("MMM DD, hh:mm");
+                        embed.setImage(results.userAvatar);
                         if (results.url != "none")
                             statusdesc += "\n Link: " + results.url;
                     } else {
@@ -346,17 +479,23 @@ client.on('message', message => {
                 */
 
             case 'dbase':
-                db.all("SELECT * FROM fans;", function(err, results) {
+                db.all("SELECT * FROM USER;", function(err, results) {
                     if (results !== "") {
                         var statusdesc = "Registered users: " + results.length + "\n";
                         var ttlcount = 0;
                         var alertcount = 0;
+                        var udccount = 0;
+                        var ddccount = 0;
                         results.forEach(function(item, index) {
                             alertcount += results[index].alerts;
-                            ttlcount += results[index].msgcount;
+                            ttlcount += results[index].messages;
+                            udccount += results[index].updoots;
+                            ddccount += results[index].downdoots;
                         });
                         statusdesc += "Alerts set: " + alertcount + "\n";
                         statusdesc += "Messages sent: " + ttlcount + "\n";
+                        statusdesc += "Updoots: " + udccount + "\n";
+                        statusdesc += "Downdoots: " + ddccount + "\n";
                         var embed = new Discord.RichEmbed()
                         embed.addField("Drunkerbox Database Stats", statusdesc);
                         message.channel.send({
@@ -377,7 +516,7 @@ client.on('message', message => {
                 */
 
             case 'about':
-                db.get("SELECT * FROM dbotstats;", function(err, results) {
+                db.get("SELECT * FROM BOTSTATS;", function(err, results) {
                     if (results != undefined) {
                         var statusdesc = "App Version: " + results.appver + "\n";
                         statusdesc += "Times Started: " + results.restarts + "\n";
@@ -389,10 +528,11 @@ client.on('message', message => {
                             embed
                         });
                     } else {
-                        logger.error("Um... No dbotstat table in database? Weird.")
+                        logger.error("Um... No BOTSTATS table in database? Weird.")
                     }
                 });
                 break;
+
                 /*
                  ██████  ██ ████████
                 ██       ██    ██
@@ -420,19 +560,22 @@ client.on('message', message => {
 
             case 'alerts':
                 //Database method
-                db.all("SELECT * FROM fans WHERE fanname = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, results) {
-                    if (results == "") {
-                        console.log("Couldn't find that user");
-                        db_newuser(message.author, message.member);
-                        console.log("Created a new profile for: " + message.author.username + "#" + message.author.discriminator);
-                        // Let the user know if it succeeded
-                        message.member.addRole(config.dbAlertsRoleID).catch(console.error);
-                        message.author.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
-                    } else {
-                        db.run("UPDATE fans SET alerts = " + !results[0].alerts + " WHERE fanname = \'" + message.author.username + "#" + message.author.discriminator + "\';");
-                        console.log(message.author.username + "#" + message.author.discriminator + " set their alerts to " + !results[0].alerts);
-                        message.author.send("You set your alerts to " + !results[0].alerts);
-                    }
+                db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
+                    db.all("SELECT * FROM USER WHERE discordID = \'" + message.author.id + "\';", function(err, results) {
+                        if (results == "") {
+                            console.log("Couldn't find that user");
+                            db_newuser(message.author, message.member);
+                            console.log("Created a new profile for: " + message.author.username + "#" + message.author.discriminator);
+                            // Let the user know if it succeeded
+                            message.member.addRole(SERVERres.alertRoleID).catch(console.error);
+                            message.author.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+                        } else {
+                            db.run("UPDATE USER SET alerts = " + !results[0].alerts + " WHERE discordID = \'" + message.author.id + "\';");
+                            message.member.removeRole(SERVERres.alertRoleID).catch(console.error);
+                            console.log(message.author.username + "#" + message.author.discriminator + " set their alerts to " + !results[0].alerts);
+                            message.author.send("You set your alerts to " + !results[0].alerts);
+                        }
+                    });
                 });
                 break;
 
@@ -453,17 +596,144 @@ client.on('message', message => {
                     var karmamember = message.mentions.members.first();
                 }
 
-                db.all("SELECT * FROM fans WHERE fanname = \'" + karmauser.username + "#" + karmauser.discriminator + "\';", function(err, results) {
+                db.get("SELECT * FROM USER WHERE discordID = \'" + karmauser.id + "\';", function(err, results) {
                     if (results == "") {
                         logger.warn("Couldn't find that user");
                         db_newuser(karmauser, karmamember);
                         message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
                     } else {
                         var embed = new Discord.RichEmbed()
-                        var statusdesc = "Updoots: " + (results[0].updootcount / dootee_bonus) + "\nDowndoots: " + (results[0].downdootcount / dootee_bonus) + "\nBalance: " + parseInt((results[0].updootcount / (results[0].updootcount + results[0].downdootcount)) * 100) + "%";
+                        var statusdesc = "Updoots: " + results.updoots + "\nDowndoots: " + results.downdoots + "\nUpdoot Ratio: " + parseInt((results.updoots - results.downdoots) / DOOTEE_BONUS) / results.messages;
                         embed.addField(karmauser.username + "#" + karmauser.discriminator + "\nKarma Score:", statusdesc);
                         message.channel.send({
                             embed
+                        });
+                    }
+                });
+                break;
+
+                /*
+                ██     ██ ██   ██  ██████  ██ ███████
+                ██     ██ ██   ██ ██    ██ ██ ██
+                ██  █  ██ ███████ ██    ██ ██ ███████
+                ██ ███ ██ ██   ██ ██    ██ ██      ██
+                 ███ ███  ██   ██  ██████  ██ ███████
+                */
+
+            case 'whois':
+
+                if (!message.mentions.users.size) {
+                    var whoisuser = message.author;
+                    var whoismember = message.member;
+                } else {
+                    var whoisuser = message.mentions.users.first();
+                    var whoismember = message.mentions.members.first();
+                }
+                db.get("SELECT * FROM USER WHERE discordID = \'" + whoisuser.id + "\';", function(err, results) {
+                    if (results == "") {
+                        logger.warn("Couldn't find that user");
+                        db_newuser(karmauser, karmamember);
+                        message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
+                    } else {
+                        var levelCount = 0;
+                        var expCount = 0;
+                        //Minimum experience needed for this level
+                        var minL = 0;
+                        while (results.exp > expCount) {
+                            minL = expCount;
+                            levelCount++;
+                            expCount = expCount + (levelCount * LEVELMULTIPLIER);
+                        }
+                        const {
+                            createCanvas,
+                            loadImage
+                        } = require('canvas');
+
+                        //Canvas Width
+                        const canW = 250;
+                        //Canvas Height
+                        const canH = 100;
+                        //Bar Width
+                        const bW = 230;
+                        //Bar position
+                        const bX = 10;
+                        const bY = 51;
+                        const canvas = createCanvas(canW, canH)
+                        const ctx = canvas.getContext('2d')
+
+                        function barwidth(floor, ceiling, current) {
+                            var cX = current - floor; //Current level experience
+                            var nX = ceiling - floor; //neeeded experience to level
+                            var pC = cX / nX; //percent of level completed
+                            var cbW = pC * bW; //current Bar Width
+                            return cbW;
+                        }
+
+                        //For converting hex to gradients
+                        function hexToRgb(hex) {
+                            if (hex == "#000000") {
+                                hex = "#FFFFFF";
+                            }
+                            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                            return result ? {
+                                r: parseInt(result[1], 16),
+                                g: parseInt(result[2], 16),
+                                b: parseInt(result[3], 16)
+                            } : null;
+                        }
+
+                        // Create gradient
+                        function makeGRD(Re, Ge, Be, L2R, T2B) {
+                            var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
+                            grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
+                            grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
+
+                            return grd;
+                        }
+
+                        const userColor = hexToRgb(whoismember.displayHexColor);
+
+                        loadImage('playercard.png').then((playercardimg) => {
+                            //Draw the playercard background
+                            ctx.drawImage(playercardimg, 0, 0, 250, 100);
+                            // Draw XP bar
+                            ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp), 0); // Highest role color
+                            ctx.fillRect(bX, bY + 1, barwidth(minL, expCount, results.exp), 8); // draw bar
+                            // Start drawing text
+                            ctx.font = '18px Impact'
+                            ctx.fillStyle = 'rgba(' + userColor.r + ',' + userColor.g + ',' + userColor.b + ', 1)'; //User color
+                            ctx.fillText(whoisuser.username, 50, 25); // User name
+                            ctx.font = '14px Impact'
+                            ctx.fillStyle = 'rgba(255,255,255,1)';
+                            ctx.fillText(results.exp + " of " + expCount, 50, bY - 8) // XP numerals
+                            ctx.fillStyle = 'rgba(148,148,255,1)';
+                            ctx.fillText(results.downdoots, 160, canH - 10) // downdoots
+                            ctx.textAlign = 'right'
+                            ctx.fillStyle = 'rgba(255,68,0,1)';
+                            ctx.fillText(results.updoots, 90, canH - 10) //updoots
+                            ctx.fillStyle = 'rgba(255,255,255,1)';
+                            ctx.font = '32px Impact';
+                            ctx.fillText(levelCount, canW - 10, bY - 8); //Level numeral
+                            ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 0);
+                            ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 8);
+                            loadImage(whoisuser.avatarURL).then((avatarimg) => {
+                                ctx.drawImage(avatarimg, 11, 11, 32, 32);
+                                const fs = require('fs');
+                                const out = fs.createWriteStream(__dirname + '/tempCard.png');
+                                const stream = canvas.createPNGStream();
+                                stream.pipe(out);
+                                out.on('finish', () => {
+                                    const attachment = new Discord.Attachment('./tempCard.png', 'tempCard.png');
+                                    const embed = new Discord.RichEmbed()
+                                        .setTitle(whoisuser.username + '\'s Exp/Level')
+                                        .attachFile(attachment)
+                                        .setImage('attachment://tempCard.png')
+                                    //.addField("Experience Points", results.exp + " of " + expCount);
+                                    message.channel.send({
+                                        embed
+                                    });
+                                });
+                            });
                         });
                     }
                 });
@@ -499,11 +769,11 @@ client.on('message', message => {
                 statusdesc += "\n<property> includes:\n";
                 statusdesc += "**state**\nLatest stream state\n";
                 statusdesc += "**host**\nHost's username#discriminator\n";
-                statusdesc += "**hostid**\nHost's discord snowflake\n";
-                statusdesc += "**hostpic**\nHost's avatar URL\n";
+                statusdesc += "**userdiscordID**\nHost's discord snowflake\n";
+                statusdesc += "**userAvatar**\nHost's avatar URL\n";
                 statusdesc += "**url**\nURL of livestream\n";
                 statusdesc += "**startime**\nUnix time the stream started\n";
-                statusdesc += "**stoptime**\nUnix time the stream ended";
+                statusdesc += "**end**\nUnix time the stream ended";
                 var embed = new Discord.RichEmbed();
                 embed.addField("Drunkerbox API", statusdesc);
                 message.channel.send({
@@ -538,7 +808,7 @@ app.get('/api/status/', function(req, res) {
     // This API promise needs to be put in a repeatable function instead of
     // existing multiple times across the whole application
     var APIpromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -560,7 +830,7 @@ app.get('/api/status/', function(req, res) {
 app.get('/api/status/:endpoint', function(req, res) {
 
     var APIpromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -583,22 +853,37 @@ app.get('/api/status/:endpoint', function(req, res) {
             case 'hostname':
                 res.send(results.hostname);
                 break;
-            case 'hostid':
-                res.send(results.hostid);
+            case 'userdiscordID':
+                res.send(results.userdiscordID);
                 break;
-            case 'hostpic':
-                res.send(results.hostpic);
+            case 'userAvatar':
+                res.send(results.userAvatar);
                 break;
             case 'url':
                 res.send(results.url);
                 break;
-            case 'starttime':
-                res.send(results.starttime);
+            case 'start':
+                res.send(results.start);
                 break;
         }
     }, function() {
         logger.error("No active drunkerbox found.");
     })
+});
+
+app.use((err, req, res, next) => {
+    switch (err.message) {
+        case 'NoCodeProvided':
+            return res.status(400).send({
+                status: 'ERROR',
+                error: err.message,
+            });
+        default:
+            return res.status(500).send({
+                status: 'ERROR',
+                error: err.message,
+            });
+    }
 });
 
 /*
@@ -611,8 +896,29 @@ app.get('/api/status/:endpoint', function(req, res) {
 
 app.get('/', function(req, res) {
 
+    var userPromise = new Promise(function(resolve, reject) {
+        var logindata;
+
+        if (req.query.token != undefined) {
+            logindata = getUserData(req.query.token);
+        }
+
+        async function getUserData(tokin) {
+            const response = await fetch('https://discordapp.com/api/v6/users/@me', {
+                method: 'GET',
+                headers: {
+                    //'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: 'Bearer ' + tokin,
+                },
+            });
+            const userstuff = await response.json();
+            return userstuff;
+        }
+        resolve(logindata);
+    });
+
     var statusPromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM dboxes WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -624,7 +930,7 @@ app.get('/', function(req, res) {
     });
 
     var dootsPromise = new Promise(function(resolve, reject) {
-        db.all("SELECT * FROM fans ORDER BY updootcount DESC LIMIT 10;", function(err, results) {
+        db.all("SELECT * FROM USER ORDER BY updoots DESC LIMIT 10;", function(err, results) {
             if (results == "") {
                 logger.error("Somehow, nobody has updoots");
                 reject(); // reject
@@ -634,8 +940,8 @@ app.get('/', function(req, res) {
         });
     });
 
-    var dboxesPromise = new Promise(function(resolve, reject) {
-        db.all("SELECT * FROM dboxes ORDER BY starttime DESC;", function(err, results) {
+    var STREAMPromise = new Promise(function(resolve, reject) {
+        db.all("SELECT * FROM STREAM ORDER BY start DESC;", function(err, results) {
             if (results == "") {
                 logger.error("Somehow, nobody has dboxed yet")
                 resolve(results); // reject
@@ -646,10 +952,10 @@ app.get('/', function(req, res) {
     });
 
     var dbotstatsPromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM dbotstats;", function(err, results) {
+        db.get("SELECT * FROM BOTSTATS;", function(err, results) {
             if (results != undefined) {
                 webhits = results.webhits;
-                db.run("UPDATE dbotstats SET webhits = " + parseInt(results.webhits + 1) + ";");
+                db.run("UPDATE BOTSTATS SET webhits = " + parseInt(results.webhits + 1) + ";");
                 resolve(results);
             } else {
                 logger.error("Um... No dbotstat table in database? Weird.")
@@ -659,14 +965,15 @@ app.get('/', function(req, res) {
     });
 
     var collectAndRespond = function() {
-        Promise.all([statusPromise, dboxesPromise, dootsPromise, dbotstatsPromise]).then(function(values) {
+        Promise.all([statusPromise, STREAMPromise, dootsPromise, dbotstatsPromise, userPromise]).then(function(values) {
             res.render('index', {
                 drunkerstatus: values[0],
                 dboxes: values[1],
                 doots: values[2],
-                dbotstats: values[3]
+                dbotstats: values[3],
+                logindata: values[4]
             })
-        }).catch();
+        }).catch().catch().catch().catch().catch();
     }
 
     collectAndRespond();
@@ -683,5 +990,5 @@ app.get('/', function(req, res) {
 */
 
 app.post('/webhooks', function(req, res) {
-    logger.debug(req.body);
+    res.end();
 });

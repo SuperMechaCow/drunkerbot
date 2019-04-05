@@ -35,6 +35,8 @@ body {}
 
 #banner {}
 
+#UserData {}
+
 h1 {}
 
 p {}
@@ -65,4 +67,24 @@ p {}
 
 .dootCellDouble {
     min-width: 24%;
+}
+
+.discordLogin {
+    display: flex;
+    width: 100%;
+    padding: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.discordLogin a {
+    background: #7289DA;
+    padding: 0 20px;
+    line-height: 35px;
+    color: #fff;
+    font-family: 'Helvetica', 'Arial', sans-sefir;
+    font-size: 20px;
+    display: block;
+    text-decoration: none;
+    border-radius: 3px;
 }
