@@ -51,9 +51,14 @@ const logger = createLogger({
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+        format.printf(info => `\(${info.timestamp}\) \[${info.level}\]: ${info.message}`)
     ),
-    transports: [new transports.Console()]
+    transports: [
+        new transports.Console(),
+        new transports.File({
+            filename: './data/dbot.log'
+        })
+    ]
 });
 
 //Set up express
@@ -68,11 +73,9 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "0020";
+const appver = "0021";
 
 const PORT = "3000";
-
-const dbTokenFile = 'config.json';
 
 const TIMERRESET = 15; // Number of seconds before getting more exp
 const LEVELMULTIPLIER = 100; // You need this much experience * your current level to level up
@@ -92,21 +95,8 @@ const defaultResults = {
     "end": "none"
 }
 
-var config = null;
-
-// Login from token file
-// This needs to be changed to a envvar or db entry
-db.get("SELECT * FROM BOTSTATS;", function(err, data) {
-    discordClient.login(data.secret);
-});
-
-// fs.readFile(dbTokenFile, 'utf8', function(err, data) {
-//     if (err) {
-//         return logger.error(err);
-//     }
-//     config = JSON.parse(data);
-//     discordClient.login(config.token);
-// })
+// Login from envar
+discordClient.login(process.env.BOTSECRET);
 
 discordClient.on('ready', () => {
     logger.verbose(`Logged in as ${discordClient.user.tag}!`);
@@ -135,11 +125,11 @@ app.listen(PORT, function() {
 
 //Call this to create a new user in the database
 function db_newuser(newuserauthor, newusermember) {
-    db.run("INSERT INTO USER (discordID, alerts, messages, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', 0, 1, 0, 0, 0, 0);");
-    logger.verbose("Created a new profile for: " + newuserauthor.username + "\n");
-    // Let the user know if it succeeded
-    //newusermember.addRole(config.dbAlertsRoleID).catch(console.error);
-    newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+    db.run("INSERT INTO USER (discordID, alerts, messages, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', 0, 1, 0, 0, 0, 0);", function(err) {
+        // Let the user know if it succeeded
+        logger.verbose("Created a new profile for: " + newuserauthor.username + "\n");
+        newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+    });
 }
 
 /*
@@ -247,8 +237,6 @@ discordClient.on('message', message => {
         if (results == undefined) {
             logger.warn("Couldn't find that user");
             db.get("SELECT * FROM USER WHERE username = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, RECOVERres) {
-
-
                 db_newuser(message.author, message.member);
             });
         } else {
@@ -272,6 +260,17 @@ discordClient.on('message', message => {
                     }
                 });
             }
+        }
+    });
+
+    db.get("SELECT * FROM MESSAGES WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';", function(error, results) {
+        if (results == undefined) {
+            logger.warn("Couldn't find that user/channel/server combo.");
+            db.run("INSERT INTO MESSAGES (userdiscordID, channeldiscordID, serverdiscordID, messages) VALUES (\'" + message.author.id + "\', \'" + message.channel.id + "\', \'" + message.guild.id + "\', 1);", function(err) {
+                logger.verbose("Created a message counter combo for: " + message.author.username);
+            });
+        } else {
+            db.run("UPDATE MESSAGES SET messages = messages + 1 WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';");
         }
     });
 
@@ -373,7 +372,7 @@ discordClient.on('message', message => {
 
             case 'start':
                 db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
-                    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+                    db.get("SELECT * FROM STREAM WHERE serverdiscordID = \'" + message.guild.id + "\'AND state = 1;", function(err, results) {
                         if (results == undefined) {
                             if (args[1] != null) {
                                 //Validate the the URL here
@@ -417,7 +416,7 @@ discordClient.on('message', message => {
 
             case 'stop':
                 db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
-                    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+                    db.get("SELECT * FROM STREAM WHERE serverdiscordID = \'" + message.guild.id + "\'AND state = 1;", function(err, results) {
                         if (message.member.roles.has(SERVERres.modRoleID) || drunkerstatus.userdiscordID == message.author.id) {
                             if (results != undefined) {
                                 db.run("UPDATE STREAM SET end = " + moment().unix() + ", state = 0 WHERE state = 1;");
@@ -622,6 +621,18 @@ discordClient.on('message', message => {
 
             case 'whois':
 
+                //Canvas Width
+                const canW = 250;
+                //Canvas Height
+                const canH = 100;
+                //Bar Width
+                const bW = 230;
+                //Bar Height
+                const bH = 8
+                //Bar position
+                const bX = 10;
+                const bY = 51;
+
                 if (!message.mentions.users.size) {
                     var whoisuser = message.author;
                     var whoismember = message.member;
@@ -629,115 +640,149 @@ discordClient.on('message', message => {
                     var whoisuser = message.mentions.users.first();
                     var whoismember = message.mentions.members.first();
                 }
-                db.get("SELECT * FROM USER WHERE discordID = \'" + whoisuser.id + "\';", function(err, results) {
-                    if (results == "") {
-                        logger.warn("Couldn't find that user");
-                        db_newuser(karmauser, karmamember);
-                        message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
-                    } else {
-                        var levelCount = 0;
-                        var expCount = 0;
-                        //Minimum experience needed for this level
-                        var minL = 0;
-                        while (results.exp > expCount) {
-                            minL = expCount;
-                            levelCount++;
-                            expCount = expCount + (levelCount * LEVELMULTIPLIER);
-                        }
-                        const {
-                            createCanvas,
-                            loadImage
-                        } = require('canvas');
-
-                        //Canvas Width
-                        const canW = 250;
-                        //Canvas Height
-                        const canH = 100;
-                        //Bar Width
-                        const bW = 230;
-                        //Bar position
-                        const bX = 10;
-                        const bY = 51;
-                        const canvas = createCanvas(canW, canH)
-                        const ctx = canvas.getContext('2d')
-
-                        function barwidth(floor, ceiling, current) {
-                            var cX = current - floor; //Current level experience
-                            var nX = ceiling - floor; //neeeded experience to level
-                            var pC = cX / nX; //percent of level completed
-                            var cbW = pC * bW; //current Bar Width
-                            return cbW;
-                        }
-
-                        //For converting hex to gradients
-                        function hexToRgb(hex) {
-                            if (hex == "#000000") {
-                                hex = "#FFFFFF";
+                if (message.attachments.size) {
+                    var pc_reply = "";
+                    if (message.attachments.first().width != canW || message.attachments.first().height != canH) {
+                        pc_reply += "This image isn't " + canW + "x" + canH + "px so it may look weird...\n\n... but ";
+                    }
+                    db.run("UPDATE USER SET pcbg_url = \'" + message.attachments.first().url + "\' WHERE discordID = \'" + message.author.id + "\';");
+                    pc_reply += "I changed your background for you!";
+                    message.channel.send(pc_reply)
+                } else {
+                    db.get("SELECT * FROM USER WHERE discordID = \'" + whoisuser.id + "\';", function(err, results) {
+                        if (results == null) {
+                            logger.warn("Couldn't find that user");
+                            db_newuser(whoisuser, whoismember);
+                            message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
+                        } else {
+                            var levelCount = 0;
+                            var expCount = 0;
+                            //Minimum experience needed for this level
+                            var minL = 0;
+                            while (results.exp > expCount) {
+                                minL = expCount;
+                                levelCount++;
+                                expCount = expCount + (levelCount * LEVELMULTIPLIER);
                             }
-                            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                            return result ? {
-                                r: parseInt(result[1], 16),
-                                g: parseInt(result[2], 16),
-                                b: parseInt(result[3], 16)
-                            } : null;
-                        }
+                            const {
+                                createCanvas,
+                                loadImage
+                            } = require('canvas');
 
-                        // Create gradient
-                        function makeGRD(Re, Ge, Be, L2R, T2B) {
-                            var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
-                            grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
-                            grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
+                            const canvas = createCanvas(canW, canH)
+                            const ctx = canvas.getContext('2d')
 
-                            return grd;
-                        }
+                            function barwidth(floor, ceiling, current) {
+                                var cX = current - floor; //Current level experience
+                                var nX = ceiling - floor; //neeeded experience to level
+                                var pC = cX / nX; //percent of level completed
+                                var cbW = pC * bW; //current Bar Width
+                                return cbW;
+                            }
 
-                        const userColor = hexToRgb(whoismember.displayHexColor);
+                            //For converting hex to gradients
+                            function hexToRgb(hex) {
+                                if (hex == "#000000") {
+                                    hex = "#FFFFFF";
+                                }
+                                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                                return result ? {
+                                    r: parseInt(result[1], 16),
+                                    g: parseInt(result[2], 16),
+                                    b: parseInt(result[3], 16)
+                                } : null;
+                            }
 
-                        loadImage('playercard.png').then((playercardimg) => {
-                            //Draw the playercard background
-                            ctx.drawImage(playercardimg, 0, 0, 250, 100);
-                            // Draw XP bar
-                            ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp), 0); // Highest role color
-                            ctx.fillRect(bX, bY + 1, barwidth(minL, expCount, results.exp), 8); // draw bar
-                            // Start drawing text
-                            ctx.font = '18px Impact'
-                            ctx.fillStyle = 'rgba(' + userColor.r + ',' + userColor.g + ',' + userColor.b + ', 1)'; //User color
-                            ctx.fillText(whoisuser.username, 50, 25); // User name
-                            ctx.font = '14px Impact'
-                            ctx.fillStyle = 'rgba(255,255,255,1)';
-                            ctx.fillText(results.exp + " of " + expCount, 50, bY - 8) // XP numerals
-                            ctx.fillStyle = 'rgba(148,148,255,1)';
-                            ctx.fillText(results.downdoots, 160, canH - 10) // downdoots
-                            ctx.textAlign = 'right'
-                            ctx.fillStyle = 'rgba(255,68,0,1)';
-                            ctx.fillText(results.updoots, 90, canH - 10) //updoots
-                            ctx.fillStyle = 'rgba(255,255,255,1)';
-                            ctx.font = '32px Impact';
-                            ctx.fillText(levelCount, canW - 10, bY - 8); //Level numeral
-                            ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 0);
-                            ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 8);
-                            loadImage(whoisuser.avatarURL).then((avatarimg) => {
-                                ctx.drawImage(avatarimg, 11, 11, 32, 32);
-                                const fs = require('fs');
-                                const out = fs.createWriteStream(__dirname + '/tempCard.png');
-                                const stream = canvas.createPNGStream();
-                                stream.pipe(out);
-                                out.on('finish', () => {
-                                    const attachment = new Discord.Attachment('./tempCard.png', 'tempCard.png');
-                                    const embed = new Discord.RichEmbed()
-                                        .setTitle(whoisuser.username + '\'s Exp/Level')
-                                        .attachFile(attachment)
-                                        .setImage('attachment://tempCard.png')
-                                    //.addField("Experience Points", results.exp + " of " + expCount);
-                                    message.channel.send({
-                                        embed
+                            // Create gradient
+                            function makeGRD(Re, Ge, Be, L2R, T2B) {
+                                var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
+                                grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
+                                grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
+
+                                return grd;
+                            }
+
+                            const userColor = hexToRgb(whoismember.displayHexColor);
+
+                            if (results.pcbg_url == undefined) {
+                                var playerCard_source = './data/playercards/pc_def_hwf.png';
+                            } else {
+                                var playerCard_source = results.pcbg_url;
+                            }
+
+                            loadImage(playerCard_source).then((playercardimg) => {
+                                //Draw the playercard background
+                                ctx.drawImage(playercardimg, 0, 0, 250, 100);
+                                loadImage('./data/playercards/frame.png').then((frameimg) => {
+                                    ctx.drawImage(frameimg, 0, 0, 250, 100);
+                                    // Draw XP bar
+                                    ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp), 0); // Highest role color
+                                    ctx.fillRect(bX, bY + 1, barwidth(minL, expCount, results.exp), bH); // draw bar
+                                    // Start drawing text
+                                    ctx.font = '18px Impact'
+                                    ctx.fillStyle = 'rgba(' + userColor.r + ',' + userColor.g + ',' + userColor.b + ', 1)'; //User color
+                                    ctx.fillText(whoisuser.username, 50, 25); // User name
+                                    ctx.font = '14px Impact'
+                                    ctx.fillStyle = 'rgba(255,255,255,1)';
+                                    ctx.fillText(results.exp + " of " + expCount, 50, bY - 8) // XP numerals
+                                    ctx.fillStyle = 'rgba(148,148,255,1)';
+                                    ctx.fillText(results.downdoots, 160, canH - 10) // downdoots
+                                    ctx.textAlign = 'right'
+                                    ctx.fillStyle = 'rgba(255,68,0,1)';
+                                    ctx.fillText(results.updoots, 90, canH - 10) //updoots
+                                    ctx.fillStyle = 'rgba(255,255,255,1)';
+                                    ctx.font = '32px Impact';
+                                    ctx.fillText(levelCount, canW - 10, bY - 8); //Level numeral
+                                    ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 0);
+                                    ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 8);
+                                    loadImage(whoisuser.avatarURL).then((avatarimg) => {
+                                        ctx.drawImage(avatarimg, 11, 11, 32, 32);
+                                        const fs = require('fs');
+                                        const out = fs.createWriteStream(__dirname + '/tempCard.png');
+                                        const stream = canvas.createPNGStream();
+                                        stream.pipe(out);
+                                        out.on('finish', () => {
+                                            const attachment = new Discord.Attachment('./tempCard.png', 'tempCard.png');
+                                            const embed = new Discord.RichEmbed()
+                                                .setTitle(whoisuser.username + '\'s Exp/Level')
+                                                .attachFile(attachment)
+                                                .setImage('attachment://tempCard.png')
+                                                //.addField("Joined on: ", moment.unix(whoismember.joinedTimestamp).format('MM/DD/YY'));
+                                            message.channel.send({
+                                                embed
+                                            });
+                                        });
                                     });
                                 });
                             });
+                        }
+                    });
+                }
+                break;
+
+                /*
+                ████████  ██████  ██████      ████████ ███████ ███    ██
+                   ██    ██    ██ ██   ██        ██    ██      ████   ██
+                   ██    ██    ██ ██████         ██    █████   ██ ██  ██
+                   ██    ██    ██ ██             ██    ██      ██  ██ ██
+                   ██     ██████  ██             ██    ███████ ██   ████
+                */
+
+            case 'top10':
+                db.all("SELECT * FROM MESSAGES WHERE channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\' ORDER BY messages DESC LIMIT 10;", function(error, results) {
+                    if (results !== "") {
+                        var embed = new Discord.RichEmbed()
+                        embed.setTitle("#" + discordClient.channels.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10");
+                        results.forEach(function(item, index) {
+                            embed.addField(discordClient.users.find(user => user.id === item.userdiscordID).username, item.messages);
+                        });
+                        message.channel.send({
+                            embed
                         });
                     }
                 });
                 break;
+
                 /*
                 ██   ██ ███████ ██      ██████
                 ██   ██ ██      ██      ██   ██
@@ -748,14 +793,17 @@ discordClient.on('message', message => {
 
             case 'help':
                 //"!db help <command>" should give more info on the individual command
-                var statusdesc = "**!db start <url>**\nStart a drunkerbox stream and link tothe provided <url>\n";
+                var statusdesc = "**!db start <url>**\nStart a drunkerbox stream and link to the provided <url>\n";
                 statusdesc += "**!db stop**\nStop and clear the drunkerbox\n";
                 statusdesc += "**!db status**\nDisplay summary of the currently running drunkerbox stream\n";
                 statusdesc += "**!db dbase**\nDisplay stats about the DrunkerBoxes database\n";
                 statusdesc += "**!db about**\nDisplay stats about drunkerbot\n";
                 statusdesc += "**!db git**\nLinks to Drunkerboxes related Git Repos\n";
                 statusdesc += "**!db alerts**\nToggle alerts for DrunkerBoxes for yourself\n";
-                statusdesc += "**!db api**\nDrunkerbot API information"
+                statusdesc += "**!db api**\nDrunkerbot API information\n"
+                statusdesc += "**!db karma**\nCheck your or <mention>\'s Karma breakdown\n"
+                statusdesc += "**!db whois <mention>**\nCheck your or <mention>\'s Player Card\'\n"
+                statusdesc += "**!db top10**\nTop 10 in messages sent in the current channel"
                 var embed = new Discord.RichEmbed()
                 embed.addField("Drunkerbox Status", statusdesc)
                 message.channel.send({
@@ -992,3 +1040,10 @@ app.get('/', function(req, res) {
 app.post('/webhooks', function(req, res) {
     res.end();
 });
+
+
+
+
+
+
+discordClient.on("error", console.error);
