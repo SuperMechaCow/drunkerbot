@@ -7,14 +7,13 @@ const {
 } = require('../utils');
 
 //THE CORRECT WAY
-//const CLIENT_ID = process.env.CLIENT_ID;
-//const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-var config = null;
+// const CLIENT_ID = "517521443869687818";
+// const CLIENT_SECRET = "Ofp0DLSNt9k21JEM5-nRVCSKPYgfO2C0";
 
 const redirect = encodeURIComponent('http://localhost:3000/api/discord/callback');
-const CLIENT_ID = "517521443869687818";
-const CLIENT_SECRET = "nn8JKR8k_f8D0gdv5Mbg1b5hie12ULMG";
 
 router.get('/login', (req, res) => {
     res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify%20guilds&response_type=code&redirect_uri=${redirect}`);

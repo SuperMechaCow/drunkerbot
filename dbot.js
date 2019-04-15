@@ -73,7 +73,7 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "0021";
+const appver = "1.0.0";
 
 const PORT = "3000";
 
@@ -115,13 +115,51 @@ app.listen(PORT, function() {
     });
     db.get("SELECT * FROM BOTSTATS;", function(err, results) {
         if (results != undefined) {
-            db.run("UPDATE BOTSTATS SET laststart = " + moment().unix() + ", restarts = " + parseInt(results.restarts + 1) + ", appver = " + appver + ";");
+            db.run("UPDATE BOTSTATS SET laststart = " + moment().unix() + ", restarts = " + parseInt(results.restarts + 1) + ", appver = \'" + appver + "\';");
             logger.verbose("Running appver " + appver);
         } else {
             logger.error("Um... No BOTSTATS table in database? Weird.")
         }
     });
 });
+
+/*
+██    ██ ███████ ███████ ███████ ██    ██ ██          ███████ ██    ██ ███    ██  ██████ ████████ ██  ██████  ███    ██ ███████
+██    ██ ██      ██      ██      ██    ██ ██          ██      ██    ██ ████   ██ ██         ██    ██ ██    ██ ████   ██ ██
+██    ██ ███████ █████   █████   ██    ██ ██          █████   ██    ██ ██ ██  ██ ██         ██    ██ ██    ██ ██ ██  ██ ███████
+██    ██      ██ ██      ██      ██    ██ ██          ██      ██    ██ ██  ██ ██ ██         ██    ██ ██    ██ ██  ██ ██      ██
+ ██████  ███████ ███████ ██       ██████  ███████     ██       ██████  ██   ████  ██████    ██    ██  ██████  ██   ████ ███████
+*/
+
+function barwidth(floor, ceiling, current) {
+    var cX = current - floor; //Current level experience
+    var nX = ceiling - floor; //neeeded experience to level
+    var pC = cX / nX; //percent of level completed
+    var cbW = pC * bW; //current Bar Width
+    return cbW;
+}
+
+//For converting hex to gradients
+function hexToRgb(hex) {
+    if (hex == "#000000") {
+        hex = "#FFFFFF";
+    }
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+// Create gradient
+function makeGRD(Re, Ge, Be, L2R, T2B) {
+    var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
+    grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
+    grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
+
+    return grd;
+}
 
 //Call this to create a new user in the database
 function db_newuser(newuserauthor, newusermember) {
@@ -737,7 +775,6 @@ discordClient.on('message', message => {
                                     ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 8);
                                     loadImage(whoisuser.avatarURL).then((avatarimg) => {
                                         ctx.drawImage(avatarimg, 11, 11, 32, 32);
-                                        const fs = require('fs');
                                         const out = fs.createWriteStream(__dirname + '/tempCard.png');
                                         const stream = canvas.createPNGStream();
                                         stream.pipe(out);
@@ -747,7 +784,7 @@ discordClient.on('message', message => {
                                                 .setTitle(whoisuser.username + '\'s Exp/Level')
                                                 .attachFile(attachment)
                                                 .setImage('attachment://tempCard.png')
-                                                //.addField("Joined on: ", moment.unix(whoismember.joinedTimestamp).format('MM/DD/YY'));
+                                            //.addField("Joined on: ", moment.unix(whoismember.joinedTimestamp).format('MM/DD/YY'));
                                             message.channel.send({
                                                 embed
                                             });
@@ -771,16 +808,55 @@ discordClient.on('message', message => {
             case 'top10':
                 db.all("SELECT * FROM MESSAGES WHERE channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\' ORDER BY messages DESC LIMIT 10;", function(error, results) {
                     if (results !== "") {
-                        var embed = new Discord.RichEmbed()
-                        embed.setTitle("#" + discordClient.channels.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10");
-                        results.forEach(function(item, index) {
-                            embed.addField(discordClient.users.find(user => user.id === item.userdiscordID).username, item.messages);
-                        });
-                        message.channel.send({
-                            embed
+                        //Bar Width / Height
+                        const bW = 250;
+                        const bH = 24
+                        //Bar position
+                        const bX = 10;
+                        const bY = 51;
+                        //Canvas Width  / Height
+                        const canW = bW;
+                        const canH = results.length * bH;
+
+                        const {
+                            createCanvas,
+                            loadImage
+                        } = require('canvas');
+
+                        const canvas = createCanvas(canW, canH)
+                        const ctx = canvas.getContext('2d')
+
+                        loadImage('./data/nameBar.png').then((nameBar) => {
+                            results.forEach(function(item, index) {
+                                // embed.addField(discordClient.users.find(user => user.id === item.userdiscordID).username, item.messages);
+                                //Draw the playercard background
+                                ctx.drawImage(nameBar, 0, index * bH, bW, bH);
+                                // Start drawing text
+                                ctx.textAlign = 'left'
+                                ctx.font = '12px Impact'
+                                ctx.fillStyle = 'rgba(255,255,255,1)';
+                                ctx.fillText(discordClient.users.find(user => user.id === item.userdiscordID).username, 12, 16 + (index * bH)); // User name
+                                ctx.textAlign = 'right'
+                                ctx.fillText(item.messages, canW - 12, 16 + (index * bH)); // User name
+                            });
+                            const out = fs.createWriteStream(__dirname + '/tempTop10.png');
+                            const stream = canvas.createPNGStream();
+                            stream.pipe(out);
+                            out.on('finish', () => {
+                                const attachment = new Discord.Attachment('./tempTop10.png', 'tempTop10.png');
+                                const embed = new Discord.RichEmbed()
+                                    .setTitle("#" + discordClient.channels.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10")
+                                    .attachFile(attachment)
+                                    .setImage('attachment://tempTop10.png')
+                                //.addField("Joined on: ", moment.unix(whoismember.joinedTimestamp).format('MM/DD/YY'));
+                                message.channel.send({
+                                    embed
+                                });
+                            });
                         });
                     }
                 });
+
                 break;
 
                 /*
@@ -1040,10 +1116,5 @@ app.get('/', function(req, res) {
 app.post('/webhooks', function(req, res) {
     res.end();
 });
-
-
-
-
-
 
 discordClient.on("error", console.error);
