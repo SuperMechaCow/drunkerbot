@@ -73,7 +73,7 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "1.0.1";
+const appver = "1.0.2";
 
 const PORT = "3000";
 
@@ -131,11 +131,11 @@ app.listen(PORT, function() {
  ██████  ███████ ███████ ██       ██████  ███████     ██       ██████  ██   ████  ██████    ██    ██  ██████  ██   ████ ███████
 */
 
-function barwidth(floor, ceiling, current) {
+function barwidth(floor, ceiling, current, barWidthMax) {
     var cX = current - floor; //Current level experience
     var nX = ceiling - floor; //neeeded experience to level
     var pC = cX / nX; //percent of level completed
-    var cbW = pC * bW; //current Bar Width
+    var cbW = pC * barWidthMax; //current Bar Width
     return cbW;
 }
 
@@ -153,8 +153,8 @@ function hexToRgb(hex) {
 }
 
 // Create gradient
-function makeGRD(Re, Ge, Be, L2R, T2B) {
-    var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
+function makeGRD(Re, Ge, Be, L2R, T2B, canvasObj) {
+    var grd = canvasObj.createLinearGradient(0, 0, L2R, T2B);
     grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
     grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
 
@@ -714,36 +714,6 @@ discordClient.on('message', message => {
                             const canvas = createCanvas(canW, canH)
                             const ctx = canvas.getContext('2d')
 
-                            function barwidth(floor, ceiling, current) {
-                                var cX = current - floor; //Current level experience
-                                var nX = ceiling - floor; //neeeded experience to level
-                                var pC = cX / nX; //percent of level completed
-                                var cbW = pC * bW; //current Bar Width
-                                return cbW;
-                            }
-
-                            //For converting hex to gradients
-                            function hexToRgb(hex) {
-                                if (hex == "#000000") {
-                                    hex = "#FFFFFF";
-                                }
-                                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                                return result ? {
-                                    r: parseInt(result[1], 16),
-                                    g: parseInt(result[2], 16),
-                                    b: parseInt(result[3], 16)
-                                } : null;
-                            }
-
-                            // Create gradient
-                            function makeGRD(Re, Ge, Be, L2R, T2B) {
-                                var grd = ctx.createLinearGradient(0, 0, L2R, T2B);
-                                grd.addColorStop(0, 'rgba(' + Math.round(Re / 2) + ',' + Math.round(Ge / 2) + ',' + Math.round(Be / 2) + ',1)');
-                                grd.addColorStop(1, 'rgba(' + Re + ',' + Ge + ',' + Be + ',1)');
-
-                                return grd;
-                            }
-
                             const userColor = hexToRgb(whoismember.displayHexColor);
 
                             if (results.pcbg_url == undefined) {
@@ -758,8 +728,8 @@ discordClient.on('message', message => {
                                 loadImage('./data/playercards/frame.png').then((frameimg) => {
                                     ctx.drawImage(frameimg, 0, 0, 250, 100);
                                     // Draw XP bar
-                                    ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp), 0); // Highest role color
-                                    ctx.fillRect(bX, bY + 1, barwidth(minL, expCount, results.exp), bH); // draw bar
+                                    ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp, bW), 0, ctx); // Highest role color
+                                    ctx.fillRect(bX, bY + 1, barwidth(minL, expCount, results.exp, bW), bH); // draw bar
                                     // Start drawing text
                                     ctx.font = '18px Impact'
                                     ctx.fillStyle = 'rgba(' + userColor.r + ',' + userColor.g + ',' + userColor.b + ', 1)'; //User color
@@ -775,8 +745,8 @@ discordClient.on('message', message => {
                                     ctx.fillStyle = 'rgba(255,255,255,1)';
                                     ctx.font = '32px Impact';
                                     ctx.fillText(levelCount, canW - 10, bY - 8); //Level numeral
-                                    ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 0);
-                                    ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty)), 8);
+                                    ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 0, ctx);
+                                    ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 8);
                                     loadImage(whoisuser.avatarURL).then((avatarimg) => {
                                         ctx.drawImage(avatarimg, 11, 11, 32, 32);
                                         const out = fs.createWriteStream(__dirname + '/tempCard.png');
@@ -818,9 +788,14 @@ discordClient.on('message', message => {
                         //Bar position
                         const bX = 10;
                         const bY = 51;
+                        //Bar Margin
+                        const bM = 2;
                         //Canvas Width  / Height
                         const canW = bW;
-                        const canH = results.length * bH;
+                        const canH = results.length * (bH + bM);
+                        //Text location inside of bar
+                        const textOffsetX = 12
+                        const textOffsetY = 17
 
                         const {
                             createCanvas,
@@ -834,14 +809,14 @@ discordClient.on('message', message => {
                             results.forEach(function(item, index) {
                                 // embed.addField(discordClient.users.find(user => user.id === item.userdiscordID).username, item.messages);
                                 //Draw the playercard background
-                                ctx.drawImage(nameBar, 0, index * bH, bW, bH);
+                                ctx.drawImage(nameBar, 0, index * (bH + bM), bW, bH);
                                 // Start drawing text
                                 ctx.textAlign = 'left'
-                                ctx.font = '12px Impact'
+                                ctx.font = '16px Courier'
                                 ctx.fillStyle = 'rgba(255,255,255,1)';
-                                ctx.fillText(discordClient.users.find(user => user.id === item.userdiscordID).username, 12, 16 + (index * bH)); // User name
+                                ctx.fillText(discordClient.users.find(user => user.id === item.userdiscordID).username, textOffsetX, textOffsetY + (index * (bH + bM))); // User name
                                 ctx.textAlign = 'right'
-                                ctx.fillText(item.messages, canW - 12, 16 + (index * bH)); // User name
+                                ctx.fillText(item.messages + '💬', canW - textOffsetX, textOffsetY + (index * (bH + bM))); // User name
                             });
                             const out = fs.createWriteStream(__dirname + '/tempTop10.png');
                             const stream = canvas.createPNGStream();

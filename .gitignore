@@ -1,8 +1,3 @@
-token_devbot.txt
-token_drubot.txt
-token.txt
-config.json
-dbdbase.json
-data/dbdbase.db
-data/botbase.db
-data/dbot.log
+/data/dbdbase.db
+/data/botbase.db
+tempTop10.png
