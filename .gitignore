@@ -4,4 +4,5 @@ token.txt
 config.json
 dbdbase.json
 data/dbdbase.db
+data/botbase.db
 data/dbot.log

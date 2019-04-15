@@ -73,7 +73,7 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "1.0.0";
+const appver = "1.0.1";
 
 const PORT = "3000";
 
@@ -271,46 +271,50 @@ discordClient.on('message', message => {
     */
 
     //USERS SHOULD BE ABLE TO OPT OUT OF THIS AND ALL TRACKING
-    db.get("SELECT * FROM USER WHERE discordID = \'" + message.author.id + "\';", function(err, results) {
-        if (results == undefined) {
-            logger.warn("Couldn't find that user");
-            db.get("SELECT * FROM USER WHERE username = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, RECOVERres) {
-                db_newuser(message.author, message.member);
-            });
-        } else {
-            if (message.author.username != results.username) {
-                db.run("UPDATE USER SET username = \'" + message.author.username + "\' WHERE discordID = \'" + message.author.id + "\';");
-            }
-            if (moment().unix() - results.lastmessage < TIMERRESET) {
-                db.run("UPDATE USER SET messages = messages + 1 WHERE discordID = \'" + message.author.id + "\';");
-            } else {
-                var expbonus = (Math.floor(Math.random() * (MAXEXPGAIN + 1)) * EXPMULTIPLIER);
-                db.run("UPDATE USER SET messages = messages + 1, lastmessage = " + moment().unix() + ", exp = exp + " + expbonus + " WHERE discordID = \'" + results.discordID + "\';", function() {
-                    //Check to see if they leveled up here
-                    var levelCount = 0;
-                    var expCount = 0;
-                    while (results.exp > expCount) {
-                        levelCount++;
-                        expCount = expCount + (levelCount * LEVELMULTIPLIER);
-                    }
-                    if (levelCount > results.lastlevel) {
-                        db.run("UPDATE USER SET lastlevel = " + levelCount + " WHERE discordID = \'" + results.discordID + "\';");
-                    }
+    if (!message.author.bot) {
+        db.get("SELECT * FROM USER WHERE discordID = \'" + message.author.id + "\';", function(err, results) {
+            if (results == undefined) {
+                logger.warn("Couldn't find that user");
+                db.get("SELECT * FROM USER WHERE username = \'" + message.author.username + "#" + message.author.discriminator + "\';", function(err, RECOVERres) {
+                    db_newuser(message.author, message.member);
                 });
+            } else {
+                if (message.author.username != results.username) {
+                    db.run("UPDATE USER SET username = \'" + message.author.username + "\' WHERE discordID = \'" + message.author.id + "\';");
+                }
+                if (moment().unix() - results.lastmessage < TIMERRESET) {
+                    db.run("UPDATE USER SET messages = messages + 1 WHERE discordID = \'" + message.author.id + "\';");
+                } else {
+                    var expbonus = (Math.floor(Math.random() * (MAXEXPGAIN + 1)) * EXPMULTIPLIER);
+                    db.run("UPDATE USER SET messages = messages + 1, lastmessage = " + moment().unix() + ", exp = exp + " + expbonus + " WHERE discordID = \'" + results.discordID + "\';", function() {
+                        //Check to see if they leveled up here
+                        var levelCount = 0;
+                        var expCount = 0;
+                        while (results.exp > expCount) {
+                            levelCount++;
+                            expCount = expCount + (levelCount * LEVELMULTIPLIER);
+                        }
+                        if (levelCount > results.lastlevel) {
+                            db.run("UPDATE USER SET lastlevel = " + levelCount + " WHERE discordID = \'" + results.discordID + "\';");
+                        }
+                    });
+                }
             }
-        }
-    });
+        });
+    }
 
-    db.get("SELECT * FROM MESSAGES WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';", function(error, results) {
-        if (results == undefined) {
-            logger.warn("Couldn't find that user/channel/server combo.");
-            db.run("INSERT INTO MESSAGES (userdiscordID, channeldiscordID, serverdiscordID, messages) VALUES (\'" + message.author.id + "\', \'" + message.channel.id + "\', \'" + message.guild.id + "\', 1);", function(err) {
-                logger.verbose("Created a message counter combo for: " + message.author.username);
-            });
-        } else {
-            db.run("UPDATE MESSAGES SET messages = messages + 1 WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';");
-        }
-    });
+    if (!message.author.bot) {
+        db.get("SELECT * FROM MESSAGES WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';", function(error, results) {
+            if (results == undefined) {
+                logger.warn("Couldn't find that user/channel/server combo.");
+                db.run("INSERT INTO MESSAGES (userdiscordID, channeldiscordID, serverdiscordID, messages) VALUES (\'" + message.author.id + "\', \'" + message.channel.id + "\', \'" + message.guild.id + "\', 1);", function(err) {
+                    logger.verbose("Created a message counter combo for: " + message.author.username);
+                });
+            } else {
+                db.run("UPDATE MESSAGES SET messages = messages + 1 WHERE userdiscordID = \'" + message.author.id + "\' AND channeldiscordID = \'" + message.channel.id + "\' AND serverdiscordID = \'" + message.guild.id + "\';");
+            }
+        });
+    }
 
     /*
     ██████  ██████       ██████  ██████  ███    ███ ███    ███  █████  ███    ██ ██████  ███████
