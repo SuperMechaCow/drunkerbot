@@ -73,7 +73,7 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Iterate this each time you update the bot
-const appver = "1.0.2";
+const appver = "1.1.0";
 
 const PORT = "3000";
 
@@ -335,7 +335,41 @@ discordClient.on('message', message => {
     }
 
     if (command === 'roll') {
-        message.channel.send(message.author.username + ' rolled a ' + (Math.round(Math.random() * (20 - 1) + 1)) + ' out of 20.');
+        if (Math.round(Math.random() * (20 - 1) + 1) == 42) {
+            message.channel.send(message.author.username + ' rolled a ...');
+            message.channel.send('Ahh fuck! I dropped the die!');
+            message.channel.send('Aw man... the POS rolled under the couch...');
+        } else {
+            message.channel.send(message.author.username + ' rolled a ' + (Math.round(Math.random() * (20 - 1) + 1)) + ' out of 20.');
+        }
+    }
+
+    /*
+    ██   ██ ███████ ██      ██████
+    ██   ██ ██      ██      ██   ██
+    ███████ █████   ██      ██████
+    ██   ██ ██      ██      ██
+    ██   ██ ███████ ███████ ██
+    */
+
+    if (command === 'help') {
+        //"!db help <command>" should give more info on the individual command
+        var statusdesc = "**!db start <url>**\nStart a drunkerbox stream and link to the provided <url>\n";
+        statusdesc += "**!db stop**\nStop and clear the drunkerbox\n";
+        statusdesc += "**!db status**\nDisplay summary of the currently running drunkerbox stream\n";
+        statusdesc += "**!db dbase**\nDisplay stats about the DrunkerBoxes database\n";
+        statusdesc += "**!db about**\nDisplay stats about drunkerbot\n";
+        statusdesc += "**!db git**\nLinks to Drunkerboxes related Git Repos\n";
+        statusdesc += "**!db alerts**\nToggle alerts for DrunkerBoxes for yourself\n";
+        statusdesc += "**!db api**\nDrunkerbot API information\n"
+        statusdesc += "**!db karma**\nCheck your or <mention>\'s Karma breakdown\n"
+        statusdesc += "**!db whois <mention>**\nCheck your or <mention>\'s Player Card\'\n"
+        statusdesc += "**!db top10**\nTop 10 in messages sent in the current channel"
+        var embed = new Discord.RichEmbed()
+        embed.addField("Drunkerbox Status", statusdesc)
+        message.channel.send({
+            embed
+        });
     }
 
     if (command === 'db') {
@@ -838,34 +872,6 @@ discordClient.on('message', message => {
 
                 break;
 
-                /*
-                ██   ██ ███████ ██      ██████
-                ██   ██ ██      ██      ██   ██
-                ███████ █████   ██      ██████
-                ██   ██ ██      ██      ██
-                ██   ██ ███████ ███████ ██
-                */
-
-            case 'help':
-                //"!db help <command>" should give more info on the individual command
-                var statusdesc = "**!db start <url>**\nStart a drunkerbox stream and link to the provided <url>\n";
-                statusdesc += "**!db stop**\nStop and clear the drunkerbox\n";
-                statusdesc += "**!db status**\nDisplay summary of the currently running drunkerbox stream\n";
-                statusdesc += "**!db dbase**\nDisplay stats about the DrunkerBoxes database\n";
-                statusdesc += "**!db about**\nDisplay stats about drunkerbot\n";
-                statusdesc += "**!db git**\nLinks to Drunkerboxes related Git Repos\n";
-                statusdesc += "**!db alerts**\nToggle alerts for DrunkerBoxes for yourself\n";
-                statusdesc += "**!db api**\nDrunkerbot API information\n"
-                statusdesc += "**!db karma**\nCheck your or <mention>\'s Karma breakdown\n"
-                statusdesc += "**!db whois <mention>**\nCheck your or <mention>\'s Player Card\'\n"
-                statusdesc += "**!db top10**\nTop 10 in messages sent in the current channel"
-                var embed = new Discord.RichEmbed()
-                embed.addField("Drunkerbox Status", statusdesc)
-                message.channel.send({
-                    embed
-                });
-                break;
-
             case 'api':
                 statusdesc += "\nhttps:\/\/drunkerbot.hardwareflare.com/\nFor a human-readable drunkerbox stream status on your browser!\n";
                 statusdesc += "\nFor API endpoints, send a GET request to \nhttps:\/\/drunkerbot.hardwareflare.com/api/status/\nor\nhttps:\/\/drunkerbot.hardwareflare.com/api/status/<property>\n";
@@ -893,6 +899,114 @@ discordClient.on('message', message => {
 
             default:
                 message.channel.send("You did not enter a command that I know :\(");
+                break;
+        }
+    }
+    /*
+    ████████ ██████   █████  ██████  ██ ███    ██  ██████      ██████   ██████  ███████ ████████
+       ██    ██   ██ ██   ██ ██   ██ ██ ████   ██ ██           ██   ██ ██    ██ ██         ██
+       ██    ██████  ███████ ██   ██ ██ ██ ██  ██ ██   ███     ██████  ██    ██ ███████    ██
+       ██    ██   ██ ██   ██ ██   ██ ██ ██  ██ ██ ██    ██     ██      ██    ██      ██    ██
+       ██    ██   ██ ██   ██ ██████  ██ ██   ████  ██████      ██       ██████  ███████    ██
+    */
+
+    if (command == 'tp') {
+        switch (args[0]) {
+            case 'sell':
+                //Find the parts in quotes
+                var desc = message.content.split(/\"+/g);
+                //Go through all results and remove empty spaces
+                desc.forEach(function(item, index) {
+                    if (desc[index] == " ")
+                        desc.splice(index, 1)
+                });
+                var sellObj = {
+                    'qty': args[1],
+                    'name': desc[1],
+                    'desc': desc[2]
+                };
+                db.run("INSERT INTO catalogue (seller_discordID, guild_discordID, cat_name, cat_desc, in_stock, status) VALUES (\'" + message.author.id + "\', \'" + message.guild.id + "\', \'" + sellObj.name + "\', \'" + sellObj.desc + "\', \'" + sellObj.qty + "\', \'available\');");
+                message.channel.send("Thanks! I've listed that for you!");
+                break;
+            case 'buy':
+                if (isNaN(args[1]) || isNaN(args[2])) {
+                    message.channel.send("I need numbers, bro.\n\n**!tp buy <item ID> <quantity>**");
+                } else {
+                    db.get("SELECT * FROM catalogue WHERE status = \'available\' AND in_stock >= " + args[2] + " AND TID = " + args[1] + ";", function(error, results) {
+                        if (results == undefined) {
+                            message.channel.send("Could not find that item ID, there are not enough in stock, or you suck at typing. I don't know. If I were good at verbose error messages I wouldn't crash all of the damn time.");
+                        } else {
+                            db.run("INSERT INTO orders (userdiscordID, serverdiscordID, catalogueTID, order_status, qty, order_date) VALUES (\'" + message.author.id + "\', \'" + results.seller_discordID + "\', " + results.TID + ", \'available\', " + args[2] + ", " + moment().unix() + ");", function(error) {
+                                db.run("UPDATE catalogue SET in_stock = " + parseInt(results.in_stock - args[2]) + " WHERE TID = " + args[1] + ";", function(error) {
+                                    const embed = new Discord.RichEmbed()
+                                        .setTitle("New Purchase Order")
+                                        .setColor('GREEN')
+                                        .addField("Sold!", message.author.username + "#" + message.author.discriminator + " in " + discordClient.users.find(guild => guild.id === results.guild_discordID).name + " purchased " + args[2] + " of your " + results.cat_name + "!");
+                                    discordClient.users.find(user => user.id === results.seller_discordID).send({
+                                        embed
+                                    });
+                                });
+                            });
+                        }
+                    });
+                }
+                break;
+            case 'catalogue':
+                db.all("SELECT * FROM catalogue WHERE status = \'available\' AND in_stock > 0;", function(error, results) {
+                    if (results == "") {
+                        message.channel.send("There is nothing for sale.");
+                    } else {
+                        const embed = new Discord.RichEmbed()
+                            .setTitle("Trading Post Catalogue")
+                            .setColor('GREEN');
+                        results.forEach(function(item, index) {
+                            embed.addField(item.cat_name + " [" + item.TID + "]", item.cat_desc + "\n" + item.in_stock + " in stock.\n[ID: " + discordClient.users.find(user => user.id === item.seller_discordID).username + "]");
+                        });
+                        message.channel.send({
+                            embed
+                        });
+                    }
+                });
+                break;
+            case 'status':
+                db.all("SELECT * FROM catalogue WHERE seller_discordID = \'" + message.author.id + "\';", function(error, results) {
+                    if (results == "") {
+                        message.channel.send("You do not have anything listed for sale.");
+                    } else {
+                        var foundItem = false;
+                        results.forEach(function(item, index) {
+                            if (item.TID == args[1]) {
+                                foundItem = true;
+                                switch (args[2]) {
+                                    case 'available':
+                                    case 'unavailable':
+                                        message.channel.send("I changed that for you.");
+                                        db.run("UPDATE catalogue SET status = \'" + args[2] + "\' WHERE TID = " + args[1] + ";")
+                                        break;
+                                    default:
+                                        message.channel.send("Invalid status. Try **\'available\'** or **'unavailable\'**.");
+                                        break;
+                                }
+                            }
+                        });
+                        if (!foundItem) {
+                            message.channel.send("Couldn't find that item ID in the catalogue.");
+                        }
+                    }
+                });
+                break;
+            case 'help':
+                statusdesc = "**!tp sell <quantity> \"<Name>\" \"<Description>\"**: Sell a thing! *(must use double quotes!)*\n";
+                statusdesc += "**!tp buy <item ID> <quantity>**: Send a purchase order tothe seller.\n";
+                statusdesc += "**!tp catalogue**: List what's for sale and find the item IDs\n";
+                statusdesc += "**!tp status <item ID> <available/unavailable>**: Change the status of an item you are selling.\n";
+                var embed = new Discord.RichEmbed();
+                embed.addField("Commands", statusdesc)
+                    .setTitle("Trading Post Help")
+                    .setColor('GREEN');
+                message.channel.send({
+                    embed
+                });
                 break;
         }
     }
