@@ -1,0 +1,85 @@
+// discordClient.on('message', message => {
+//
+//     /*
+//     ██████  ██████       ██████  ██████  ███    ███ ███    ███  █████  ███    ██ ██████  ███████
+//     ██   ██ ██   ██     ██      ██    ██ ████  ████ ████  ████ ██   ██ ████   ██ ██   ██ ██
+//     ██   ██ ██████      ██      ██    ██ ██ ████ ██ ██ ████ ██ ███████ ██ ██  ██ ██   ██ ███████
+//     ██   ██ ██   ██     ██      ██    ██ ██  ██  ██ ██  ██  ██ ██   ██ ██  ██ ██ ██   ██      ██
+//     ██████  ██████       ██████  ██████  ██      ██ ██      ██ ██   ██ ██   ████ ██████  ███████
+//     */
+//
+//     /*
+//
+//                 /*
+//                 ████████ ███████ ███████ ████████
+//                    ██    ██      ██         ██
+//                    ██    █████   ███████    ██
+//                    ██    ██           ██    ██
+//                    ██    ███████ ███████    ██
+//                 */
+//
+//             case 'test':
+//
+//                 // snooper.api.post("/api/submit", {
+//                 //     api_type: "json",
+//                 //     kind: 'self',
+//                 //     sr: 'drunkerbot',
+//                 //     title: 'Hello World',
+//                 //     text: 'I\'m sending you some sunshine!'
+//                 // }, function(err, statusCode, data) {
+//                 //     if (!err) console.log('Just posted to reddit')
+//                 // })
+//
+//                 break;
+//
+//                 /*
+//                 ██████  ██    ██ ███    ██
+//                 ██   ██ ██    ██ ████   ██
+//                 ██████  ██    ██ ██ ██  ██
+//                 ██   ██ ██    ██ ██  ██ ██
+//                 ██   ██  ██████  ██   ████
+//                 */
+//
+//                 //     // THIS ISN'T ZOMBIE CODE!
+//                 //     // This code is very functional, but allows users to run totally arbitrary code from the discord channel
+//                 //     // Consider the commenting out this code as the "Safety On"
+//                 // case 'run':
+//                 //     if (message.member.permissions.has('ADMINISTRATOR')) {
+//                 //
+//                 //         var commandstore = message.content;
+//                 //
+//                 //         var myRegexp = /```([^```]*)```/g;
+//                 //         var arr = [];
+//                 //
+//                 //         //Iterate through results of regex search
+//                 //         do {
+//                 //             var match = myRegexp.exec(commandstore);
+//                 //             if (match != null) {
+//                 //                 //Each call to exec returns the next match as an array where index 1
+//                 //                 //is the captured group if it exists and index 0 is the text matched
+//                 //                 arr.push(match[1] ? match[1] : match[0]);
+//                 //             }
+//                 //         } while (match != null);
+//                 //
+//                 //         //console.log(arr.toString());
+//                 //         eval(arr.toString());
+//                 //     } else {
+//                 //         message.channel.send("This command can only be used by Administrators on this server. It really shouldn't be used by anybody ever. It shouldn't exist. This is irresponsible.")
+//                 //     }
+//                 //
+//                 //     break;
+//
+//                 /*
+//                 ██████  ███████ ███████  █████  ██    ██ ██   ████████
+//                 ██   ██ ██      ██      ██   ██ ██    ██ ██      ██
+//                 ██   ██ █████   █████   ███████ ██    ██ ██      ██
+//                 ██   ██ ██      ██      ██   ██ ██    ██ ██      ██
+//                 ██████  ███████ ██      ██   ██  ██████  ███████ ██
+//                 */
+//
+//             default:
+//                 message.channel.send("You did not enter a command that I know :\(");
+//                 break;
+//         }
+//     }
+//
