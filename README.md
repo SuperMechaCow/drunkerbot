@@ -5,7 +5,7 @@ DrunkerBot is made up of three major parts:
 
 ## Discord Bot
 
-Use `!db help` to get a list of commands DrunkerBot has. Using these commands, users can designate themselves as a host for a DrunkerBox livestream and provide others with information on it.
+Use `!#help` to get a list of commands DrunkerBot has. Using these commands, users can designate themselves as a host for a DrunkerBox livestream and provide others with information on it.
 
 ## DrunkerBox API
 
