@@ -7,12 +7,12 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    // !tp buy <item ID> <quantity>
+    // !#buy <item ID> <quantity>
     //Another user can buy an item off the catalogue
     if (isNaN(args[0]) || isNaN(args[1])) {
         //If the ID or the quantity aren't numbers
         //Let the user know
-        message.channel.send("I need numbers, bro.\n\n**!tp buy <item ID> <quantity>**");
+        message.channel.send("I need numbers, bro.\n\n**!#buy <item ID> <quantity>**");
     } else {
         //Otherwise, find the item in the catalogue
         db.get("SELECT * FROM catalogue WHERE status = \'available\' AND in_stock >= " + args[1] + " AND TID = " + args[0] + ";", function(error, results) {

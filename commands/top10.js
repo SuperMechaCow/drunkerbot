@@ -38,7 +38,7 @@ exports.run = (discordClient, message, args) => {
             const canvas = createCanvas(canW, canH)
             const ctx = canvas.getContext('2d')
 
-            loadImage('./data/nameBar.png').then((nameBar) => {
+            loadImage(__dirname + '/../data/nameBar.png').then((nameBar) => {
                 results.forEach(function(item, index) {
                     // embed.addField(discordClient.users.find(user => user.id === item.userdiscordID).username, item.messages);
                     //Draw the playercard background
@@ -51,11 +51,11 @@ exports.run = (discordClient, message, args) => {
                     ctx.textAlign = 'right'
                     ctx.fillText(item.messages + '💬', canW - textOffsetX, textOffsetY + (index * (bH + bM))); // User name
                 });
-                const out = fs.createWriteStream(__dirname + '/tempTop10.png');
+                const out = fs.createWriteStream(__dirname + '/../data/tempTop10.png');
                 const stream = canvas.createPNGStream();
                 stream.pipe(out);
                 out.on('finish', () => {
-                    const attachment = new Discord.Attachment('./tempTop10.png', 'tempTop10.png');
+                    const attachment = new Discord.Attachment(__dirname + '/../data/tempTop10.png', 'tempTop10.png');
                     const embed = new Discord.RichEmbed()
                         .setTitle("#" + discordClient.channels.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10")
                         .attachFile(attachment)

@@ -103,7 +103,7 @@ exports.run = (discordClient, message, args) => {
                 const userColor = hexToRgb(whoismember.displayHexColor);
 
                 if (results.pcbg_url == undefined) {
-                    var playerCard_source = './data/playercards/pc_def_hwf.png';
+                    var playerCard_source = __dirname + '/../data/playercards/pc_def_hwf.png';
                 } else {
                     var playerCard_source = results.pcbg_url;
                 }
@@ -111,7 +111,7 @@ exports.run = (discordClient, message, args) => {
                 loadImage(playerCard_source).then((playercardimg) => {
                     //Draw the playercard background
                     ctx.drawImage(playercardimg, 0, 0, 250, 100);
-                    loadImage('./data/playercards/frame.png').then((frameimg) => {
+                    loadImage(__dirname + '/../data/playercards/frame.png').then((frameimg) => {
                         ctx.drawImage(frameimg, 0, 0, 250, 100);
                         // Draw XP bar
                         ctx.fillStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp, bW), 0, ctx); // Highest role color
@@ -135,11 +135,11 @@ exports.run = (discordClient, message, args) => {
                         ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 8);
                         loadImage(whoisuser.avatarURL).then((avatarimg) => {
                             ctx.drawImage(avatarimg, 11, 11, 32, 32);
-                            const out = fs.createWriteStream(__dirname + '/tempCard.png');
+                            const out = fs.createWriteStream(__dirname + '/../data/tempCard.png');
                             const stream = canvas.createPNGStream();
                             stream.pipe(out);
                             out.on('finish', () => {
-                                const attachment = new Discord.Attachment('./tempCard.png', 'tempCard.png');
+                                const attachment = new Discord.Attachment(__dirname + '/../data/tempCard.png', 'tempCard.png');
                                 const embed = new Discord.RichEmbed()
                                     .setTitle(whoisuser.username + '\'s Exp/Level')
                                     .attachFile(attachment)

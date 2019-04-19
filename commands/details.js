@@ -9,7 +9,7 @@ exports.run = (discordClient, message, args) => {
     if (args[0] && !isNaN(args[0])) {
         db.get("SELECT * FROM catalogue WHERE TID = \'" + args[0] + "\';", function(error, results) {
             if (results == undefined) {
-                message.channel.send("Couldn't find that item!\n\n**!tp details <Item ID>**");
+                message.channel.send("Couldn't find that item!\n\n**!#details <Item ID>**");
             } else {
                 const embed = new Discord.RichEmbed()
                     .setTitle(results.cat_name)
@@ -21,6 +21,6 @@ exports.run = (discordClient, message, args) => {
             }
         });
     } else {
-        message.channel.send("Bad parameters!\n\n**!tp details <Item ID>**");
+        message.channel.send("Bad parameters!\n\n**!#details <Item ID>**");
     }
 }

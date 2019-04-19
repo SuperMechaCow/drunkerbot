@@ -1,5 +1,8 @@
 data/dbdbase.db
 data/botbase.db
-tempTop10.png
-node_modules/*
+data/dbot.log
+data/tempCard.png
+data/tempTop10.png
+node_modules/
 dat.dat
+test.js

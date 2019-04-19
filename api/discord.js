@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const btoa = require('btoa');
 const {
     catchAsync
-} = require('../utils');
+} = require('../modules/utils');
 
 //THE CORRECT WAY
 const CLIENT_ID = process.env.CLIENT_ID;
