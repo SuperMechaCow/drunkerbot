@@ -38,136 +38,19 @@ app.use(express.static("public"));
 app.use('/api/discord', require('./api/discord'));
 
 //Custom Modules
+const config = require('./modules/config.js');
+const settings = require('./modules/settings.js');
 const logger = require('./modules/log.js');
 const newuser = require('./modules/newuser.js');
-
-//Iterate this each time you update the bot
-const appver = "2.0.0";
-
-const PORT = "3000";
-
-const DOOTEE_BONUS = 1;
-const DOOTER_BONUS = 0.25;
-
-const defaultResults = {
-    "state": false,
-    "host": "none",
-    "userdiscordID": "none",
-    "userAvatar": "none",
-    "url": "none",
-    "start": "none",
-    "end": "none"
-}
+const newsnoo = require('./modules/newsnoo.js');
 
 // Login from envar
-discordClient.login(process.env.BOTSECRET);
-
-discordClient.on('ready', () => {
-    logger.verbose(`Logged in as ${discordClient.user.tag}!`);
-    discordClient.user.setStatus('idle');
-    //Mid-drunkerbox stream crash recovery
-    db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
-        if (results != undefined) {
-            db.run("UPDATE STREAM SET end = " + moment().unix() + ", state = 0 WHERE state = 1;");
-            logger.warn("Old live-stream was stopped.");
-        }
-    });
-    db.get("SELECT * FROM BOTSTATS;", function(err, results) {
-        if (results != undefined) {
-            db.run("UPDATE BOTSTATS SET laststart = " + moment().unix() + ", restarts = " + parseInt(results.restarts + 1) + ", appver = \'" + appver + "\';");
-            logger.verbose("Running appver " + appver);
-        } else {
-            logger.error("Um... No BOTSTATS table in database? Weird.")
-        }
-    });
-});
+discordClient.login(config.BOTSECRET);
 
 // start the server in the port 3000 !
-app.listen(PORT, function() {
-    logger.verbose('Listening on port ' + PORT + '.');
+app.listen(config.PORT, function() {
+    logger.verbose('Listening on port ' + config.PORT + '.');
 });
-
-/*
- ██████  █████  ██      ██           ██████  ███████     ██████   ██████   ██████  ████████ ██    ██
-██      ██   ██ ██      ██          ██    ██ ██          ██   ██ ██    ██ ██    ██    ██     ██  ██
-██      ███████ ██      ██          ██    ██ █████       ██   ██ ██    ██ ██    ██    ██      ████
-██      ██   ██ ██      ██          ██    ██ ██          ██   ██ ██    ██ ██    ██    ██       ██
- ██████ ██   ██ ███████ ███████      ██████  ██          ██████   ██████   ██████     ██       ██
-*/
-
-discordClient.on('messageReactionAdd', (reaction, user) => {
-    if (reaction.message.author != reaction.users.last()) {
-        doot(reaction.message.author, reaction.emoji.name, DOOTEE_BONUS);
-        doot(user, reaction.emoji.name, DOOTER_BONUS);
-    }
-});
-
-discordClient.on('messageReactionRemove', (reaction, user) => {
-    if (reaction.message.author != reaction.users.last()) {
-        doot(reaction.message.author, reaction.emoji.name, DOOTEE_BONUS * -1);
-        doot(user, reaction.emoji.name, DOOTER_BONUS * -1);
-    }
-});
-
-discordClient.on('messageReactionRemoveAll', (reaction, user) => {
-    //Learn how this works
-});
-
-function doot(dootUser, dootemoji, adjust) {
-    //This is sloppy code, I know.
-    if (dootemoji === "upvote" || dootemoji === "downvote" || dootemoji === "updoot" || dootemoji === "downdoot") {
-        //Find user in database (create new function that does this)
-        db.all("SELECT * FROM USER WHERE discordID = \'" + dootUser.id + "\';", function(err, results) {
-            if (results == "") {
-                logger.warn("Couldn't find that user: " + dootUser.id + "#" + dootUser.discriminator);
-                users.newuser(dootUser);
-            }
-            //save to db
-            if (dootemoji === "upvote") {
-                db.run("UPDATE USER SET updoots = " + (results[0].updoots + adjust) + " WHERE discordID = \'" + dootUser.id + "\';");
-            }
-            if (dootemoji === "downvote") {
-                db.run("UPDATE USER SET downdoots = " + (results[0].downdoots + adjust) + " WHERE discordID = \'" + dootUser.id + "\';");
-            }
-        });
-    }
-}
-
-/*
-██████  ███████ ██████  ██████  ██ ████████     ███████ ███    ██  ██████   ██████  ██████  ███████ ██████
-██   ██ ██      ██   ██ ██   ██ ██    ██        ██      ████   ██ ██    ██ ██    ██ ██   ██ ██      ██   ██
-██████  █████   ██   ██ ██   ██ ██    ██        ███████ ██ ██  ██ ██    ██ ██    ██ ██████  █████   ██████
-██   ██ ██      ██   ██ ██   ██ ██    ██             ██ ██  ██ ██ ██    ██ ██    ██ ██      ██      ██   ██
-██   ██ ███████ ██████  ██████  ██    ██        ███████ ██   ████  ██████   ██████  ██      ███████ ██   ██
-*/
-
-snooper.watcher.getCommentWatcher('hardwareflare').on('comment', function(comment) {
-    newsnoo(comment, 'comment');
-});
-snooper.watcher.getPostWatcher('hardwareflare').on('post', function(post) {
-    newsnoo(post, 'post');
-});
-
-function newsnoo(data, datatype) {
-    console.log('/u/' + data.data.author + ' made a new ' + datatype + ':');
-    //console.log(data.data);
-    var embed = new Discord.RichEmbed();
-    if (datatype == 'comment') {
-        var statusdesc = '\`\`\`' + data.data.body + '\`\`\`\n';
-        embed.addField(data.data.link_title, statusdesc);
-    } else if (datatype == 'post') {
-        var statusdesc = '\`\`\`' + data.data.selftext + '\`\`\`\n';
-        embed.addField(data.data.title, statusdesc);
-    }
-    //embed.setImage('https://seeklogo.com/images/R/reddit-logo-8ABF8F5F2B-seeklogo.com.png');
-    embed.setTitle('NEW SNOO!')
-    embed.setURL('https://www.reddit.com' + data.data.permalink);
-    embed.setColor('RED');
-    embed.setFooter('/u/' + data.data.author)
-    discordClient.channels.find(channel => channel.id === '425737169676533760').send({
-        embed
-    });
-}
 
 /*
  ██████  ██████  ███    ███ ███    ███  █████  ███    ██ ██████      ██   ██  █████  ███    ██ ██████  ██      ███████ ██████
@@ -202,12 +85,26 @@ fs.readdir("./commands/", (err, files) => {
         let props = require(`./commands/${file}`);
         // Get just the command name from the file name
         let commandName = file.split(".")[0];
-        logger.verbose(`Attempting to load command ${commandName}`);
+        //logger.verbose(`Attempting to load command ${commandName}`);
         // Here we simply store the whole thing in the command Enmap. We're not running it right now.
         discordClient.commands.set(commandName, props);
     });
 });
 
+/*
+██████  ███████ ██████  ██████  ██ ████████     ███████ ███    ██  ██████   ██████  ██████  ███████ ██████
+██   ██ ██      ██   ██ ██   ██ ██    ██        ██      ████   ██ ██    ██ ██    ██ ██   ██ ██      ██   ██
+██████  █████   ██   ██ ██   ██ ██    ██        ███████ ██ ██  ██ ██    ██ ██    ██ ██████  █████   ██████
+██   ██ ██      ██   ██ ██   ██ ██    ██             ██ ██  ██ ██ ██    ██ ██    ██ ██      ██      ██   ██
+██   ██ ███████ ██████  ██████  ██    ██        ███████ ██   ████  ██████   ██████  ██      ███████ ██   ██
+*/
+
+snooper.watcher.getCommentWatcher('hardwareflare').on('comment', function(comment) {
+    newsnoo(comment, 'comment');
+});
+snooper.watcher.getPostWatcher('hardwareflare').on('post', function(post) {
+    newsnoo(post, 'post');
+});
 
 /*
  █████  ██████  ██
@@ -222,7 +119,7 @@ app.get('/api/status/', function(req, res) {
     // This API promise needs to be put in a repeatable function instead of
     // existing multiple times across the whole application
     var APIpromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM t_streams WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -244,7 +141,7 @@ app.get('/api/status/', function(req, res) {
 app.get('/api/status/:endpoint', function(req, res) {
 
     var APIpromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM t_streams WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -332,7 +229,7 @@ app.get('/', function(req, res) {
     });
 
     var statusPromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM STREAM WHERE state = 1;", function(err, results) {
+        db.get("SELECT * FROM t_streams WHERE state = 1;", function(err, results) {
             if (results == undefined) {
                 results = defaultResults;
                 resolve(results); // reject
@@ -344,7 +241,7 @@ app.get('/', function(req, res) {
     });
 
     var dootsPromise = new Promise(function(resolve, reject) {
-        db.all("SELECT * FROM USER ORDER BY updoots DESC LIMIT 10;", function(err, results) {
+        db.all("SELECT * FROM  t_users ORDER BY updoots DESC LIMIT 10;", function(err, results) {
             if (results == "") {
                 logger.error("Somehow, nobody has updoots");
                 reject(); // reject
@@ -354,8 +251,8 @@ app.get('/', function(req, res) {
         });
     });
 
-    var STREAMPromise = new Promise(function(resolve, reject) {
-        db.all("SELECT * FROM STREAM ORDER BY start DESC;", function(err, results) {
+    var streamsPromise = new Promise(function(resolve, reject) {
+        db.all("SELECT * FROM t_streams ORDER BY start DESC;", function(err, results) {
             if (results == "") {
                 logger.error("Somehow, nobody has dboxed yet")
                 resolve(results); // reject
@@ -366,10 +263,10 @@ app.get('/', function(req, res) {
     });
 
     var dbotstatsPromise = new Promise(function(resolve, reject) {
-        db.get("SELECT * FROM BOTSTATS;", function(err, results) {
+        db.get("SELECT * FROM MESSAGES;", function(err, results) {
             if (results != undefined) {
                 webhits = results.webhits;
-                db.run("UPDATE BOTSTATS SET webhits = " + parseInt(results.webhits + 1) + ";");
+                db.run("UPDATE  t_messages SET webhits = " + parseInt(results.webhits + 1) + ";");
                 resolve(results);
             } else {
                 logger.error("Um... No dbotstat table in database? Weird.")
@@ -379,7 +276,7 @@ app.get('/', function(req, res) {
     });
 
     var collectAndRespond = function() {
-        Promise.all([statusPromise, STREAMPromise, dootsPromise, dbotstatsPromise, userPromise]).then(function(values) {
+        Promise.all([statusPromise, streamsPromise, dootsPromise, dbotstatsPromise, userPromise]).then(function(values) {
             res.render('index', {
                 drunkerstatus: values[0],
                 dboxes: values[1],
@@ -406,5 +303,3 @@ app.get('/', function(req, res) {
 app.post('/webhooks', function(req, res) {
     res.end();
 });
-
-discordClient.on("error", console.error);

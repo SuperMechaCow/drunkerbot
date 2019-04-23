@@ -6,7 +6,7 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.all("SELECT * FROM USER;", function(err, results) {
+    db.all("SELECT * FROM t_users;", function(err, results) {
         if (results !== "") {
             var statusdesc = "Registered users: " + results.length + "\n";
             var ttlcount = 0;
@@ -15,7 +15,7 @@ exports.run = (discordClient, message, args) => {
             var ddccount = 0;
             results.forEach(function(item, index) {
                 alertcount += results[index].alerts;
-                ttlcount += results[index].messages;
+                ttlcount += results[index].message_count;
                 udccount += results[index].updoots;
                 ddccount += results[index].downdoots;
             });

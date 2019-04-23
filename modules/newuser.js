@@ -6,10 +6,14 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 const newuser = function(newuserauthor, newusermember) {
-    db.run("INSERT INTO USER (discordID, alerts, messages, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', 0, 1, 0, 0, 0, 0);", function(err) {
-        // Let the user know if it succeeded
-        logger.verbose("Created a new profile for: " + newuserauthor.username + "\n");
-        newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+    db.run("INSERT INTO t_users (userDID, usernameDiscord, alerts, message_count, lastmessage, exp, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', \'" + newuserauthor.username + "\', 0, 1, 0, 0, 0, 0, 0, 0);", function(err) {
+        if (err) {
+            logger.error(err);
+        } else {
+            // Let the user know if it succeeded
+            logger.verbose("Created a new profile for: " + newuserauthor.username);
+            newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+        }
     });
 }
 

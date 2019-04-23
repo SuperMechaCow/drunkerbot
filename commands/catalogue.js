@@ -6,7 +6,7 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.all("SELECT * FROM catalogue WHERE status = \'available\' AND in_stock > 0;", function(error, results) {
+    db.all("SELECT * FROM t_catalogue WHERE status = \'available\' AND in_stock > 0;", function(err, results) {
         if (results == "") {
             message.channel.send("There is nothing for sale.");
         } else {

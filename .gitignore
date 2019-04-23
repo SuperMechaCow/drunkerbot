@@ -4,5 +4,5 @@ data/dbot.log
 data/tempCard.png
 data/tempTop10.png
 node_modules/
-dat.dat
 test.js
+modules/config.js
