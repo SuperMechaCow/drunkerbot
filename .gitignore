@@ -3,6 +3,6 @@ data/botbase.db
 data/dbot.log
 data/tempCard.png
 data/tempTop10.png
+modules/config.js
 node_modules/
 test.js
-modules/config.js
