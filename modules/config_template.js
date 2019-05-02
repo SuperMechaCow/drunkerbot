@@ -1,6 +1,10 @@
 const config = {
+    'CLIENT_ID' : '',
+    'CLIENT_SECRET' : '',
     'BOTSECRET' : '',
-    'PORT' : 3000
+    'SESSION_SECRET' : '',
+    'oauth2redirect' : '',
+    'PORT' : 3000,
 }
 
 module.exports = config;

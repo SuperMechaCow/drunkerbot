@@ -15,10 +15,7 @@ const config = require('../modules/config.js');
 const CLIENT_ID = config.CLIENT_ID;
 const CLIENT_SECRET = config.CLIENT_SECRET;
 
-// const CLIENT_ID = "517521443869687818";
-// const CLIENT_SECRET = "Ofp0DLSNt9k21JEM5-nRVCSKPYgfO2C0";
-
-const redirect = encodeURIComponent('http://localhost:3000/api/discord/callback');
+const redirect = encodeURIComponent(config.oauth2redirect);
 
 discord_route.get('/login', (req, res) => {
     res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify%20guilds&response_type=code&redirect_uri=${redirect}`);
