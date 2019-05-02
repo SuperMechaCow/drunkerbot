@@ -1,8 +1,35 @@
 doctype html
 html
     head
-        title= 'Drunkerbot Status Page'
-        link(rel='stylesheet', href='/stylesheets/layout.css')
+        title='Drunkerbot Status Page'
         //- link(rel='stylesheet', title='light' href='/stylesheets/style_light.css')
-        link(rel='stylesheet', title='dark' href='/stylesheets/style_dark.css')
+        link(rel='stylesheet', href='/stylesheets/jquery/jquery-ui.css')
+        link(rel='stylesheet', href='/stylesheets/style_dark.css')
+        link(rel='stylesheet', href='/stylesheets/layout.css')
+        script(src='/scripts/moment.js')
+        script(src='https://code.jquery.com/jquery-1.12.4.js')
+        script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.js')
+        script.
+            $( function() {
+                $( "#accordion" ).accordion();
+            } );
+            $( function() {
+                $( "#tabs" ).tabs();
+            } );
     body
+        div#bodyholder
+            div#UserData
+                div.userNameText
+                    img(height='32', width='32', src='https://cdn.discordapp.com/avatars/' + botstuff.id + '/' + botstuff.avatar + '.png')
+                div.userNameText    
+                    a(href='/')= botstuff.username
+                if userstuff != undefined
+                    div.userNameText
+                        a(href='/panel')= userstuff.username
+                    img(height='32', width='32', src='https://cdn.discordapp.com/avatars/' + userstuff.id + '/' + userstuff.avatar + '.png')
+                    div.discordLogin
+                        a(href='/logout') Logout
+                else
+                    div.discordLogin
+                        a(href='/api/discord/login') Discord Login
+            block content

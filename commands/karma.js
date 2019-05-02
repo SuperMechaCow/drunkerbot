@@ -19,7 +19,7 @@ exports.run = (discordClient, message, args) => {
     db.get("SELECT * FROM t_users WHERE userDID = \'" + karmauser.id + "\';", function(err, results) {
         if (results == undefined) {
             logger.warn("Couldn't find that user");
-            newuser(karmauser, karmamember);
+            newuser(karmauser, message.guild.id);
             message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
         } else {
             var embed = new Discord.RichEmbed()

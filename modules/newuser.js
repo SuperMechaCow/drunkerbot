@@ -5,8 +5,8 @@ const db = new sqlite3.Database('data/botbase.db');
 //Custom Modules
 const logger = require('../modules/log.js');
 
-const newuser = function(newuserauthor, newusermember) {
-    db.run("INSERT INTO t_users (userDID, usernameDiscord, alerts, message_count, lastmessage, exp, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', \'" + newuserauthor.username + "\', 0, 1, 0, 0, 0, 0, 0, 0);", function(err) {
+const newuser = function(newuserauthor, newguild) {
+    db.run("INSERT INTO t_users (userDID, guildDID, usernameDiscord, alerts, message_count, lastmessage, exp, updoots, downdoots, updooty, downdooty) VALUES (\'" + newuserauthor.id + "\', \'" + newguild + "\', \'" + newuserauthor.username + "\', 0, 1, 0, 0, 0, 0, 0, 0);", function(err) {
         if (err) {
             logger.error(err);
         } else {

@@ -8,23 +8,47 @@
 }
 
 body {
-    background-color: #232323;
+    background: url('/img/red_bg_trans.png');
+    background-repeat: no-repeat;
+    background-position: top 100px center;
+    background-attachment: fixed;
+    background-size: contain;
     color: #AAAAAA;
+    background-color: #232323;
+}
+
+#bodyholder {
+    background: rgba(0, 0, 0, 0.6);
 }
 
 #banner {
     background-color: #660000;
 }
+
 #UserData {
     background-color: #990000;
 }
 
+.userNameText {
+    font-weight: bold;
+    font-size: 20px;
+    color: #DDDDDD;
+}
+
 h1 {
-    color: #DEDEDE;
+    font-family: impact;
+    font-weight: lighter;
+    color: #DDDDDD;
 }
 
 a {
     color: #FFFFFF;
+    text-decoration: none;
+}
+
+p {
+    font-family: trebuchet ms;
+    font-weight: normal;
 }
 
 .dootRow {}
@@ -32,8 +56,9 @@ a {
 .dootCell {
     background-color: #444444;
 }
-.dootCellName {
-}
+
+.dootCellName {}
+
 .dootCellAlt {
     background-color: #666666;
 }

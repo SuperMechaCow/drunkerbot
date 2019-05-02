@@ -1,5 +1,5 @@
 const settings = {
-    'appver' : '2.1.1',
+    'appver' : '3.0.0',
     'TIMERRESET': 15, // Number of seconds before getting more exp
     'LEVELMULTIPLIER': 100, // You need this much experience * your current level to level up
     'MAXEXPGAIN': 5, // Each time you gain exp, it's between 0 and this number
@@ -7,13 +7,12 @@ const settings = {
     'DOOTEE_BONUS': 1,
     'DOOTER_BONUS': 0.25,
     'defaultResults': {
-        "state": false,
-        "host": "none",
-        "userdiscordID": "none",
-        "userAvatar": "none",
-        "url": "none",
-        "start": "none",
-        "end": "none"
+        "host": null,
+        "userdiscordID": null,
+        "userAvatar": null,
+        "url": null,
+        "start": null,
+        "end": null
     }
 }
 

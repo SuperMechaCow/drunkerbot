@@ -1,0 +1,8 @@
+extends header
+block content
+    div#banner
+        h1= botstuff.username + ' Panel'
+    select(onchange="javascript:location.href = this.value;")
+        option(value="/") Choose a Guild...
+        each guild in t_guilds
+            option(value="/guild/" + guild.guildDID) #{guild.guildName}

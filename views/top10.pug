@@ -1,0 +1,23 @@
+extends header
+block content
+    div#banner
+        a(href='')
+            h1= top10[0].guildName
+    p Top 10 Users by Messages
+    br
+    //- select(onchange="javascript:location.href = this.value;")
+        option(value="/") Choose a Channel...
+        each channel in top10
+            option(value="./top10/" + channel.channelDID) #{channel.channelDID}
+    //- br
+    //- br
+    div.dootRow
+        div.dootCell.dootCellName= 'User'
+        div.dootCell= 'Messages'
+        div.dootCell.dootCellDouble= 'Doots'
+    for value, index in top10
+        div.dootRow
+            div.dootCell.dootCellName= top10[index].usernameDiscord
+            div.dootCell.dootCellAlt= top10[index].message_count
+            div.dootCell.updootText= top10[index].updoots
+            div.dootCell.downdootText.dootCellAlt= top10[index].downdoots

@@ -11,11 +11,11 @@ const logger = require('../modules/log.js');
 exports.run = (discordClient, message, args) => {
     db.get("SELECT * FROM t_guilds INNER JOIN t_streams ON t_guilds.guildDID = t_streams.guildDID WHERE t_guilds.guildDID = \'" + message.guild.id + "\';", function(err, results) {
         if (err) {
-            logger.error("While reading SERVER: " + err);
+            logger.error(err);
         } else {
             if (message.member.roles.has(results.modRoleID) || results.userDID == message.author.id) {
                 if (results != undefined) {
-                    db.run("UPDATE t_streams SET end = " + moment().unix() + " WHERE end IS NULL;", function(err) {
+                    db.run("UPDATE t_streams SET end = " + moment().unix() + " WHERE end IS NULL AND guildDID = \'" + message.guild.id + "\';", function(err) {
                         if (err) {
                             logger.error(err);
                         } else {

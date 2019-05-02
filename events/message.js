@@ -14,60 +14,63 @@ module.exports = (discordClient, message) => {
     // Ignore all bots
     if (message.author.bot) return;
 
-    db.get("SELECT * FROM t_users WHERE userDID = \'" + message.author.id + "\';", function(err, results) {
-        if (err) {
-            logger.error(err)
-        } else {
-            if (results == undefined) {
-                logger.warn("Couldn't find that user");
-                newuser(message.author, message.member);
+    const prefix = '!#';
+
+    // Only messages without the prefix get counted, to avoid database collisions
+    // Then return without doing anything else
+    if (message.content.indexOf(prefix) !== 0) {
+        db.get("SELECT * FROM t_users WHERE userDID = \'" + message.author.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(err, results) {
+            if (err) {
+                logger.error(err)
             } else {
-                if (message.author.username != results.usernameDiscord) {
-                    db.run("UPDATE t_users SET usernameDiscord = \'" + message.author.username + "\' WHERE userDID = \'" + message.author.id + "\';");
-                }
-                if (moment().unix() - results.lastmessage < settings.TIMERRESET) {
-                    db.run("UPDATE t_users SET message_count = message_count + 1 WHERE userDID = \'" + message.author.id + "\';");
+                if (results == undefined) {
+                    logger.warn("Couldn't find that user");
+                    newuser(message.author, message.guild.id);
                 } else {
-                    var expbonus = (Math.floor(Math.random() * (settings.MAXEXPGAIN + 1)) * settings.EXPMULTIPLIER);
-                    db.run("UPDATE t_users SET message_count = message_count + 1, lastmessage = " + moment().unix() + ", exp = exp + " + expbonus + " WHERE userDID = \'" + results.userDID + "\';", function() {
-                        //Check to see if they leveled up here
-                        var levelCount = 0;
-                        var expCount = 0;
-                        while (results.exp > expCount) {
-                            levelCount++;
-                            expCount = expCount + (levelCount * settings.LEVELMULTIPLIER);
-                        }
-                        if (levelCount > results.lastlevel) {
-                            db.run("UPDATE t_users SET lastlevel = " + levelCount + " WHERE userDID = \'" + results.userDID + "\';");
-                        }
+                    if (message.author.username != results.usernameDiscord) {
+                        db.run("UPDATE t_users SET usernameDiscord = \'" + message.author.username + "\' WHERE userDID = \'" + message.author.id + "\';");
+                    }
+                    if (moment().unix() - results.lastmessage < settings.TIMERRESET) {
+                        db.run("UPDATE t_users SET message_count = message_count + 1 WHERE userDID = \'" + message.author.id + "\';");
+                    } else {
+                        var expbonus = (Math.floor(Math.random() * (settings.MAXEXPGAIN + 1)) * settings.EXPMULTIPLIER);
+                        db.run("UPDATE t_users SET message_count = message_count + 1, lastmessage = " + moment().unix() + ", exp = exp + " + expbonus + " WHERE userDID = \'" + results.userDID + "\';", function() {
+                            //Check to see if they leveled up here
+                            var levelCount = 0;
+                            var expCount = 0;
+                            while (results.exp > expCount) {
+                                levelCount++;
+                                expCount = expCount + (levelCount * settings.LEVELMULTIPLIER);
+                            }
+                            if (levelCount > results.lastlevel) {
+                                db.run("UPDATE t_users SET lastlevel = " + levelCount + " WHERE userDID = \'" + results.userDID + "\';");
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        db.get("SELECT * FROM t_messages WHERE userDID = \'" + message.author.id + "\' AND channelDID = \'" + message.channel.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(err, results) {
+            if (err) {
+                logger.error(err)
+            } else {
+                if (results == undefined) {
+                    logger.warn("Couldn't find that user/channel/server combo.");
+                    db.run("INSERT INTO t_messages (userDID, channelDID, guildDID, message_count) VALUES (\'" + message.author.id + "\', \'" + message.channel.id + "\', \'" + message.guild.id + "\', 1);", function(err) {
+                        logger.verbose("Created a message counter combo for: " + message.author.username);
+                    });
+                } else {
+                    db.run("UPDATE t_messages SET message_count = message_count + 1 WHERE userDID = \'" + message.author.id + "\' AND channelDID = \'" + message.channel.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(error) {
+                        if (error)
+                            logger.error(error);
                     });
                 }
             }
-        }
-    });
+        });
 
-    db.get("SELECT * FROM t_messages WHERE userDID = \'" + message.author.id + "\' AND channelDID = \'" + message.channel.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(err, results) {
-        if (err) {
-            logger.error(err)
-        } else {
-            if (results == undefined) {
-                logger.warn("Couldn't find that user/channel/server combo.");
-                db.run("INSERT INTO t_messages (userDID, channelDID, guildDID, message_count) VALUES (\'" + message.author.id + "\', \'" + message.channel.id + "\', \'" + message.guild.id + "\', 1);", function(err) {
-                    logger.verbose("Created a message counter combo for: " + message.author.username);
-                });
-            } else {
-                db.run("UPDATE t_messages SET message_count = message_count + 1 WHERE userDID = \'" + message.author.id + "\' AND channelDID = \'" + message.channel.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(error) {
-                    if (error)
-                        logger.error(error);
-                });
-            }
-        }
-    });
-
-    const prefix = '!#';
-
-    // Ignore messages not starting with the prefix (in config.json)
-    if (message.content.indexOf(prefix) !== 0) return;
+        return;
+    }
 
     // Our standard argument/command name definition.
     //This code isn't looking for a prefix. It's just removing the first letter

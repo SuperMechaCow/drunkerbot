@@ -1,0 +1,70 @@
+extends header
+block content
+    div#banner
+        a(href='/guild/' + guildstreams[0].guildDID)
+            h1= guildstreams[0].guildName
+    if stream_live != undefined
+        h1= 'Stream is currently live!'
+        div#livebox
+            img(src=stream_live.userAvatar height='64' width='64')
+            br
+            p= 'Host: ' + stream_live.userDname + ' '
+            a(href=stream_live.url) Stream Link
+    else 
+
+        br
+        p= 'No stream is currently live.'
+        h3 Past Streams:
+    br
+    //- div#tabs
+    //-     ul
+    //-         if dboxes != ""
+    //-             li
+    //-                 a(href='#tabs-1') Streams
+    //-         if doots != undefined
+    //-             li
+    //-                 a(href='#tabs-2') Top 10
+    //-         li
+    //-             a(href='#tabs-3') Stats
+    //-     div#tabs-1
+    div#accordion
+        for value, index in guildstreams
+            h3= '#' + (guildstreams.length - index) + ' streamed on '
+                script= 'document.write(moment.unix(' + value.start + ').format(\'M/D/YY HH:mm\'));'
+
+            div
+                div
+                    //- This needs to be changed so it shows the user's most recent avatar
+                    a(href=value.url)
+                        img(height='64', width='64', src='https://cdn.discordapp.com/avatars/' + value.userDID + '/' + value.avatar + '.png')
+                        p= value.username
+                    if value.end !== null
+                        p
+                            |Finished on: 
+                            script= 'document.write(moment.unix(' + value.end + ').format(\'M/D/YY HH:mm\'));'
+
+                    if userstuff != undefined && value.userDID == userstuff.id
+                        p
+                            a(href='#') EDIT
+    //- 
+    //-     if doots != undefined
+    //-         div#tabs-2
+    //-             div.dootRow
+    //-                 div.dootCell.dootCellName= 'User'
+    //-                 div.dootCell.dootCellDouble= 'Doots'
+    //-                 div.dootCell= 'Messages'
+    //-                 for value, index in doots
+    //-                     div.dootRow
+    //-                         div.dootCell.dootCellName= doots[index].username
+    //-                         div.dootCell.updootText.dootCellAlt= doots[index].updoots
+    //-                         div.dootCell.downdootText= doots[index].downdoots
+    //-                         div.dootCell.dootCellAlt= doots[index].messages
+    //-     div#tabs-3
+    //-         div
+    //-             p= 'App Version: ' + dbotstats.appver
+    //-             p= 'Times Started: ' + dbotstats.restarts
+    //-             p
+    //-                 |Last Started:
+    //-                 script= 'document.write(moment.unix(' + dbotstats.laststart + ').format(\'M/D/YY HH:mm\'));'
+    //- 
+    //-             p= 'Website Hits: ' + (dbotstats.webhits + 1)

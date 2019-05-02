@@ -14,7 +14,7 @@ exports.run = (discordClient, message, args) => {
         } else {
             if (results == undefined) {
                 console.log("Couldn't find that user");
-                newuser(message.author, message.member);
+                newuser(message.author, message.guild.id);
                 console.log("Created a new profile for: " + message.author.username + "#" + message.author.discriminator);
                 // Let the user know if it succeeded
                 message.member.addRole(results.alertsRoleDID).catch(console.error);

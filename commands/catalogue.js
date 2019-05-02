@@ -6,7 +6,7 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.all("SELECT * FROM t_catalogue WHERE status = \'available\' AND in_stock > 0;", function(err, results) {
+    db.all("SELECT * FROM t_catalogue WHERE status = \'available\' AND item_stock > 0;", function(err, results) {
         if (results == "") {
             message.channel.send("There is nothing for sale.");
         } else {
@@ -14,7 +14,7 @@ exports.run = (discordClient, message, args) => {
                 .setTitle("Trading Post Catalogue")
                 .setColor('GREEN');
             results.forEach(function(item, index) {
-                embed.addField(item.cat_name + " [ID: " + item.TID + "]", item.cat_desc + "\n" + item.in_stock + " in stock.\n[" + discordClient.users.find(user => user.id === item.seller_discordID).username + "]");
+                embed.addField(item.cat_name + " [ID: " + item.TID + "]", item.cat_desc + "\n" + item.item_stock + " in stock.\n[" + discordClient.users.find(user => user.id === item.sellerDID).username + "]");
             });
             message.channel.send({
                 embed

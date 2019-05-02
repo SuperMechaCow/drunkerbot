@@ -30,7 +30,7 @@ exports.run = (discordClient, message, args) => {
             'desc': desc[2]
         };
         //Insert a new item into the catalogue table using the prior
-        db.run("INSERT INTO t_catalogue (seller_discordID, guild_discordID, cat_name, cat_desc, in_stock, status) VALUES (\'" + message.author.id + "\', \'" + message.guild.id + "\', \'" + sellObj.name + "\', \'" + sellObj.desc + "\', \'" + sellObj.qty + "\', \'available\');", function(error) {
+        db.run("INSERT INTO t_catalogue (sellerDID, guildDID, cat_name, cat_desc, item_stock, item_status) VALUES (\'" + message.author.id + "\', \'" + message.guild.id + "\', \'" + sellObj.name + "\', \'" + sellObj.desc + "\', \'" + sellObj.qty + "\', \'available\');", function(error) {
             if (!error) {
                 //If there's no error, let the user know
                 message.channel.send("Thanks! I've listed that for you!");

@@ -72,11 +72,11 @@ exports.run = (discordClient, message, args) => {
         if (message.attachments.first().width != canW || message.attachments.first().height != canH) {
             pc_reply += "This image isn't " + canW + "x" + canH + "px so it may look weird...\n\n... but ";
         }
-        db.run("UPDATE  t_users SET pcbg_url = \'" + message.attachments.first().url + "\' WHERE discordID = \'" + message.author.id + "\';");
+        db.run("UPDATE t_users SET pcbg_url = \'" + message.attachments.first().url + "\' WHERE userDID = \'" + message.author.id + "\' AND guildDID = \'" + message.guild.id + "\';");
         pc_reply += "I changed your background for you!";
         message.channel.send(pc_reply)
     } else if (args[0] === 'default') {
-        db.run("UPDATE  t_users SET pcbg_url = NULL WHERE discordID =  \'" + message.author.id + "\';", function(error) {
+        db.run("UPDATE t_users SET pcbg_url = NULL WHERE userDID =  \'" + message.author.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(error) {
             if (!error) {
                 message.channel.send("I cleared your background for you!");
             } else {
@@ -84,10 +84,10 @@ exports.run = (discordClient, message, args) => {
             }
         });
     } else {
-        db.get("SELECT * FROM t_users WHERE userDID = \'" + whoisuser.id + "\';", function(err, results) {
+        db.get("SELECT * FROM t_users WHERE userDID = \'" + whoisuser.id + "\'; AND guildDID = \'" + message.guild.id + "\'", function(err, results) {
             if (results == null) {
                 logger.warn("Couldn't find that user");
-                newuser(whoisuser, whoismember);
+                newuser(whoisuser, message.guild.id);
                 if (message.mentions.users.size)
                     message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
             } else {

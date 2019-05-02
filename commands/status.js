@@ -7,7 +7,7 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.get("SELECT * FROM t_streams WHERE state = 1;", function(err, results) {
+    db.get("SELECT * FROM t_streams WHERE end IS NULL;", function(err, results) {
         var embed = new Discord.RichEmbed();
         if (results != undefined) {
             var statusdesc = "Host: " + results.hostname + "\n Time started: " + moment.unix(results.start).format("MMM DD, hh:mm");
