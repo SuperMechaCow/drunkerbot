@@ -18,10 +18,10 @@ module.exports = (discordClient, message) => {
 
     // Only messages without the prefix get counted, to avoid database collisions
     // Then return without doing anything else
-    if (message.content.indexOf(prefix) !== 0) {
-        db.get("SELECT * FROM t_users WHERE userDID = \'" + message.author.id + "\' AND guildDID = \'" + message.guild.id + "\';", function(err, results) {
+    if (message.content.indexOf(prefix) !== 0 && message.channel.type == 'text') {
+        db.get("SELECT * FROM t_users WHERE userDID = \'" + message.author.id + "\' AND guildDID = \'" + message.gu6ild.id + "\';", function(err, results) {
             if (err) {
-                logger.error(err)
+                logger.error(message.author.username + ": \'" + message.content + "\'\n" + err)
             } else {
                 if (results == undefined) {
                     logger.warn("Couldn't find that user");

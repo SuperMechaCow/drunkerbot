@@ -13,6 +13,8 @@ const logger = require('../modules/log.js');
 const newuser = require('../modules/newuser.js');
 const settings = require('../modules/settings.js');
 
+//TODO: Deleting the message that uploaded the background image that will cause a crash
+
 function barwidth(floor, ceiling, current, barWidthMax) {
     var cX = current - floor; //Current level experience
     var nX = ceiling - floor; //neeeded experience to level
@@ -141,8 +143,8 @@ exports.run = (discordClient, message, args) => {
                         ctx.fillText('level', canW - 10, bY - 40); //Level numeral
                         ctx.font = '38px Impact';
                         ctx.fillText(levelCount, canW - 10, bY - 8); //Level numeral
-                        ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 0, ctx);
-                        ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 8);
+                        // ctx.fillStyle = makeGRD(255, 68, 0, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 0, ctx);
+                        // ctx.fillRect(bX, bY + 15, barwidth(0, parseInt(results.updoots + results.updooty + results.downdoots + results.downdooty), parseInt(results.updoots + results.updooty), bW), 8);
 
                         //Just messin' with ideas for bars with rounded edges
                         // ctx.strokeStyle = makeGRD(userColor.r, userColor.g, userColor.b, barwidth(minL, expCount, results.exp, bW), 0, ctx); // Highest role color

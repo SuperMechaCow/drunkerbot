@@ -54,8 +54,12 @@ web_routes.get('/panel', function(req, res) {
     }
 });
 
+//TODO: Check to make sure the user or guild exists before trying to retrieve info
+
 web_routes.get('/guild/:guildDID', function(req, res) {
     db.get("SELECT * FROM t_guilds WHERE t_guilds.guildDID = \'" + req.params.guildDID + "\';", function(err, results) {
+        //This line is just for testing purposes
+        // console.log(discordClient.guilds.find(guild => guild.id === req.params.guildDID));
         if (err) {
             logger.error(err);
         } else {

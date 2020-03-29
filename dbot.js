@@ -12,17 +12,17 @@ const db = new sqlite3.Database('data/botbase.db');
 const session = require('express-session');
 
 //const urlExists = require('url-exists'); //Validates URLs
-var Snooper = require('reddit-snooper'); //Reddit wrapper and API library
-snooper = new Snooper({
-    // credential information is not needed for snooper.watcher
-    // username:
-    // password:
-    // app_id:
-    // api_secret:
-    //user_agent: 'drunkerbot',
-    automatic_retries: true, // automatically handles condition when reddit says 'you are doing this too much'
-    api_requests_per_minute: 60 // api requests will be spread out in order to play nicely with Reddit
-});
+// var Snooper = require('reddit-snooper'); //Reddit wrapper and API library
+// snooper = new Snooper({
+//     // credential information is not needed for snooper.watcher
+//     // username:
+//     // password:
+//     // app_id:
+//     // api_secret:
+//     //user_agent: 'drunkerbot',
+//     automatic_retries: true, // automatically handles condition when reddit says 'you are doing this too much'
+//     api_requests_per_minute: 60 // api requests will be spread out in order to play nicely with Reddit
+// });
 
 //Custom Modules
 const config = require('./modules/config.js');
@@ -148,13 +148,13 @@ fs.readdir("./commands/", (err, files) => {
 ██   ██ ███████ ██████  ██████  ██    ██        ███████ ██   ████  ██████   ██████  ██      ███████ ██   ██
 */
 
-snooper.watcher.getCommentWatcher('hardwareflare').on('comment', function(comment) {
-    newsnoo(comment, 'comment');
-});
-
-snooper.watcher.getPostWatcher('hardwareflare').on('post', function(post) {
-    newsnoo(post, 'post');
-});
+// snooper.watcher.getCommentWatcher('hardwareflare').on('comment', function(comment) {
+//     newsnoo(comment, 'comment');
+// });
+//
+// snooper.watcher.getPostWatcher('hardwareflare').on('post', function(post) {
+//     newsnoo(post, 'post');
+// });
 
 /*
 ██     ██ ███████ ██████  ██   ██  ██████   ██████  ██   ██ ███████
