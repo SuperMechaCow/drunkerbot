@@ -7,19 +7,23 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.get("SELECT * FROM BOTSTATS;", function(err, results) {
-        if (results != undefined) {
-            var statusdesc = "App Version: " + results.appver + "\n";
-            statusdesc += "Times Started: " + results.restarts + "\n";
-            statusdesc += "Last Started: " + moment.unix(results.laststart).format('M/D/YY HH:mm') + "\n";
-            statusdesc += "Web Hits: " + results.webhits + "\n";
-            var embed = new Discord.RichEmbed()
-            embed.addField("Drunkerbot Stats", statusdesc);
-            message.channel.send({
-                embed
-            });
+    db.get("SELECT * FROM t_botstats;", function(err, results) {
+        if (err) {
+            logger.error(err)
         } else {
-            logger.error("Um... No BOTSTATS table in database? Weird.")
+            if (results != undefined) {
+                var statusdesc = "App Version: " + results.appver + "\n";
+                statusdesc += "Times Started: " + results.restarts + "\n";
+                statusdesc += "Last Started: " + moment.unix(results.laststart).format('M/D/YY HH:mm') + "\n";
+                statusdesc += "Web Hits: " + results.webhits + "\n";
+                var embed = new Discord.RichEmbed()
+                embed.addField("Drunkerbot Stats", statusdesc);
+                message.channel.send({
+                    embed
+                });
+            } else {
+                logger.error("Um... No messages table in database? Weird.")
+            }
         }
     });
 }

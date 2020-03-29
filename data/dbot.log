@@ -1,164 +1,127 @@
-(2019-04-12 17:53:57) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 17:53:57) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 17:53:58) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:06:48) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:06:48) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:07:11) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:07:11) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:07:12) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:37:36) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:37:36) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:37:37) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:37:54) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:37:54) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:37:56) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:40:01) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:40:02) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:40:02) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:40:08) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
-(2019-04-12 22:40:09) [[36mverbose[39m]: Created a message counter combo for: DevBot
-(2019-04-12 22:40:58) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:40:58) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:40:58) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:42:16) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:42:16) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:42:17) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:43:16) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:43:16) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:43:18) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:43:48) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:43:48) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:43:48) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:44:57) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:44:57) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:44:57) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:52:50) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:52:50) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:52:51) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:53:31) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:53:31) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:53:33) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 22:54:11) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 22:54:11) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 22:54:12) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:01:21) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:01:21) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:01:21) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:07:17) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:07:17) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:07:18) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:08:04) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:08:04) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:08:05) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:08:38) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:08:38) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:08:38) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:16:17) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:16:18) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:16:18) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:20:46) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:20:46) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:20:47) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:27:52) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:27:52) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:27:52) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:28:30) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:28:30) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:28:31) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:29:15) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:29:15) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:29:16) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:32:22) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:32:22) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:32:23) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:36:22) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:36:22) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:36:23) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:37:22) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:37:22) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:37:22) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-12 23:37:47) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-12 23:37:47) [[36mverbose[39m]: Running appver 0021
-(2019-04-12 23:37:48) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:53:06) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:53:06) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:53:08) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:55:48) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:55:48) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:55:50) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:56:01) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:56:02) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:56:02) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:56:41) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:56:41) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:56:41) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:57:11) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:57:11) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:57:14) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:58:14) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:58:14) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:58:15) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 11:59:25) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 11:59:25) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 11:59:26) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:00:25) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 12:00:25) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 12:00:25) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:04:23) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 12:04:23) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 12:04:25) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:05:02) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 12:05:02) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 12:05:02) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:06:26) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 12:06:26) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 12:06:26) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:07:02) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 12:07:02) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 12:07:04) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 12:54:24) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 13:12:24) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 13:12:24) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 13:12:25) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 17:14:58) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 17:14:58) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 17:14:59) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 17:18:56) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 17:18:56) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 17:18:58) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 17:19:16) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 17:19:16) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 17:19:16) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 17:22:00) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 17:22:00) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 17:22:01) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-14 17:23:13) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-14 17:23:13) [[36mverbose[39m]: Running appver 0022
-(2019-04-14 17:23:13) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 07:31:00) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 07:31:00) [[36mverbose[39m]: Running appver 0022
-(2019-04-15 07:31:02) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:14:10) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:14:10) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:15:15) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:15:15) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:15:16) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:16:52) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:16:52) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:16:52) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:17:48) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:17:48) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:17:48) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:18:49) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:18:49) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:18:50) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:19:14) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:19:14) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:19:15) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:27:11) [[36mverbose[39m]: Listening on port 3000.
-(2019-04-15 08:27:11) [[36mverbose[39m]: Running appver 1.0.0
-(2019-04-15 08:27:13) [[36mverbose[39m]: Logged in as DevBot#7786!
-(2019-04-15 08:27:40) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
-(2019-04-15 08:27:40) [[36mverbose[39m]: Created a message counter combo for: SuperMechaCow
-(2019-04-15 08:27:54) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
-(2019-04-15 08:27:54) [[36mverbose[39m]: Created a message counter combo for: DevBot
+(2019-05-02 19:13:55) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:13:57) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:13:57) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:26:32) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:26:38) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:26:38) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:29:27) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:29:28) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:29:28) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:29:33) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:29:38) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:29:38) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:29:40) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:29:43) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:29:43) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:29:49) [[33mwarn[39m]: Couldn't find that user: Dr. Summer D. Snuts
+(2019-05-02 19:29:50) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2019-05-02 19:29:59) [[33mwarn[39m]: Couldn't find that user
+(2019-05-02 19:29:59) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
+(2019-05-02 19:29:59) [[36mverbose[39m]: Created a new profile for: Dr. Summer D. Snuts
+(2019-05-02 19:30:01) [[36mverbose[39m]: Created a message counter combo for: Dr. Summer D. Snuts
+(2019-05-02 19:30:11) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:30:12) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:30:12) [[36mverbose[39m]: Running appver 3.0.0
+(2019-05-02 19:31:53) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 19:31:56) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 19:31:56) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:24:25) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:24:26) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:24:26) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:26:33) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:26:34) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:26:34) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:26:46) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:26:47) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:26:47) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:30:59) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:31:01) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:31:01) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:31:55) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:31:55) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:31:55) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-02 21:32:22) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-02 21:32:23) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-02 21:32:23) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 14:55:11) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 14:55:13) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 14:55:13) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 15:01:30) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 15:01:32) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 15:01:32) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 15:03:03) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 15:03:04) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 15:03:04) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 15:30:41) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 15:30:41) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 15:30:41) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 18:18:53) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 18:19:15) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 18:19:15) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 18:19:15) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 18:31:19) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 18:31:20) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 18:31:20) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-03 18:31:51) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-03 18:31:52) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-03 18:31:52) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-05 00:33:52) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-05 00:33:53) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-05 00:33:53) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-05 08:39:51) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-05 08:39:52) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-05 08:39:52) [[36mverbose[39m]: Running appver 3.0.2
+(2019-05-14 10:35:57) [[36mverbose[39m]: Listening on port 3000.
+(2019-05-14 10:36:00) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-05-14 10:36:00) [[36mverbose[39m]: Running appver 3.0.2
+(2019-06-03 07:24:36) [[36mverbose[39m]: Listening on port 3000.
+(2019-06-03 07:24:38) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-06-03 07:24:38) [[36mverbose[39m]: Running appver 3.0.2
+(2019-06-03 07:24:47) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
+(2019-06-03 07:24:47) [[36mverbose[39m]: Created a message counter combo for: SuperMechaCow
+(2019-06-03 14:24:09) [[31merror[39m]: read ECONNRESET
+(2019-06-03 14:37:37) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:18:19) [[36mverbose[39m]: Listening on port 3000.
+(2019-08-13 14:20:26) [[36mverbose[39m]: Listening on port 3000.
+(2019-08-13 14:20:55) [[36mverbose[39m]: Listening on port 3000.
+(2019-08-13 14:20:56) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-08-13 14:20:56) [[36mverbose[39m]: Running appver 3.0.2
+(2019-08-13 14:23:34) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:23:39) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:23:45) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:23:50) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:23:56) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:24:01) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:24:07) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:24:12) [[31merror[39m]: read ECONNRESET
+(2019-08-13 14:24:18) [[31merror[39m]: read ECONNRESET
+(2019-09-22 10:11:10) [[36mverbose[39m]: Listening on port 3000.
+(2019-09-22 10:11:12) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-09-22 10:11:12) [[36mverbose[39m]: Running appver 3.0.2
+(2019-09-22 10:12:32) [[36mverbose[39m]: Listening on port 3000.
+(2019-09-22 10:12:33) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-09-22 10:12:33) [[36mverbose[39m]: Running appver 3.0.2
+(2019-09-22 21:47:29) [[31merror[39m]: read ECONNRESET
+(2019-09-22 21:47:35) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-09-22 21:47:36) [[36mverbose[39m]: Running appver 3.0.2
+(2019-09-24 20:42:57) [[31merror[39m]: write ECONNRESET
+(2019-09-24 20:43:04) [[36mverbose[39m]: Logged in as DevBot#7786!
+(2019-09-24 20:43:04) [[36mverbose[39m]: Running appver 3.0.2
+(2019-09-24 21:29:32) [[31merror[39m]: read ECONNRESET
+(2019-09-24 21:48:41) [[31merror[39m]: read ECONNRESET
+(2019-09-25 00:48:47) [[31merror[39m]: getaddrinfo ENOTFOUND gateway.discord.gg
+(2019-09-25 12:45:14) [[31merror[39m]: getaddrinfo ENOTFOUND gateway.discord.gg
+(2019-09-25 12:45:20) [[31merror[39m]: getaddrinfo ENOTFOUND gateway.discord.gg
+(2019-09-25 12:45:25) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:31) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:36) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:42) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:47) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:53) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:45:58) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:04) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:09) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:15) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:21) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:26) [[31merror[39m]: read ECONNRESET
+(2019-09-25 12:46:32) [[31merror[39m]: read ECONNRESET

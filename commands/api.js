@@ -1,19 +1,19 @@
 const Discord = require('discord.js'); //Load Discord library and create a new client
 
 exports.run = (discordClient, message, args) => {
-    var statusdesc = "\nhttps:\/\/drunkerbot.hardwareflare.com/\nFor a human-readable drunkerbox stream status on your browser!\n";
-    statusdesc += "\nFor API endpoints, send a GET request to \nhttps:\/\/drunkerbot.hardwareflare.com/api/status/\nor\nhttps:\/\/drunkerbot.hardwareflare.com/api/status/<property>\n";
-    statusdesc += "\n<property> includes:\n";
+    var statusdesc = "\nhttps://drunkerbot.hardwareflare.com/\nFor a human-readable drunkerbox stream status on your browser!\n";
+    statusdesc += "\nAPI default endpoint is https://drunkerbot.hardwareflare.com/api/v1/\n";
+    statusdesc += "\nEndpoints currently include:\n";
     var embed = new Discord.RichEmbed()
         .setTitle("Drunkerbox API")
         .addField("Details:", statusdesc)
-        .addField("state", "Latest stream state")
-        .addField("host", "Host's username#discriminator")
-        .addField("userdiscordID", "Host's discord snowflake")
-        .addField("userAvatar", "Host's avatar URL")
-        .addField("url", "URL of livestream")
-        .addField("startime", "Unix time the stream started")
-        .addField("end", "Unix time the stream ended")
+        .addField("/bot", "*GET*: Bot details")
+        .addField("/ping", "*GET*: Pong!")
+        .addField("/roll", "*GET*: random number between 1 and 20")
+        .addField("/guild", "*GET*: List guilds that the bot uses")
+        .addField("/guild/<guild ID>/top10/<channel ID>", "*GET*: Top 10 posters in this channel of that server")
+        .addField("/guild/<guild ID>/status/", "*GET*: Live stream (drunkerbox) status of that server")
+        .addField("/guild/<guild ID>/whois/<user ID>", "*GET*: Playercard data of user on that server")
     message.channel.send({
         embed
     });

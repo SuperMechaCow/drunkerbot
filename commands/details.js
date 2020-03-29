@@ -7,20 +7,20 @@ const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
     if (args[0] && !isNaN(args[0])) {
-        db.get("SELECT * FROM catalogue WHERE TID = \'" + args[0] + "\';", function(error, results) {
+        db.get("SELECT * FROM t_catalogue WHERE TID = \'" + args[0] + "\';", function(err, results) {
             if (results == undefined) {
-                message.channel.send("Couldn't find that item!\n\n**!tp details <Item ID>**");
+                message.channel.send("Couldn't find that item!\n\n**!#details <Item ID>**");
             } else {
                 const embed = new Discord.RichEmbed()
                     .setTitle(results.cat_name)
                     .setColor('GREEN')
-                    .addField(discordClient.users.find(user => user.id === results.seller_discordID).username, results.cat_desc + "\n" + results.in_stock + " in stock [" + results.status + "]");
+                    .addField(discordClient.users.find(user => user.id === results.sellerDID).username, results.cat_desc + "\n" + results.item_stock + " in stock [" + results.item_status + "]");
                 message.channel.send({
                     embed
                 });
             }
         });
     } else {
-        message.channel.send("Bad parameters!\n\n**!tp details <Item ID>**");
+        message.channel.send("Bad parameters!\n\n**!#details <Item ID>**");
     }
 }

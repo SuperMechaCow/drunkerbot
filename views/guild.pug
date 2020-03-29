@@ -1,0 +1,21 @@
+extends header
+block content
+    div#banner
+        a(href='/guild/' + top10[0].guildDID)
+            h1= t_guilds.guildName
+    a(href= t_guilds.guildDID + '/stream') Live Streams
+    br
+    a(href= t_guilds.guildDID + '/top10') Leaderboard
+    br
+    br
+    if guildFound != undefined
+        if guildFound.owner
+            div#ownerBox
+                p You are the owner of this guild!
+                //- form
+                    | hostRoleDID
+                    input
+                    | alertsRoleDID
+                    input
+                    | streamerRoleDID
+                    input

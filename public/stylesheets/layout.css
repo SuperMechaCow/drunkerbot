@@ -20,10 +20,21 @@
     margin-right: auto;
 }
 
+html, body {
+    position: relative;
+    height: 100%;
+    min-height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
 #bodyholder {
-    width: 80%;
+    position: relative;
+    height: 100%;
+    min-height: 100%;
     margin-left: auto;
     margin-right: auto;
+    height: auto;
 }
 
 #livebox, #linksbox {
@@ -35,11 +46,22 @@ body {}
 
 #banner {}
 
-#UserData {}
+#UserData {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.userNameText {
+
+}
 
 h1 {}
 
-p {}
+p {
+    margin: auto;
+}
 
 .dootRow {
     margin: 2px;
@@ -71,7 +93,7 @@ p {}
 
 .discordLogin {
     display: flex;
-    width: 100%;
+    /* width: 100%; */
     padding: 4px;
     align-items: center;
     justify-content: center;
@@ -80,11 +102,28 @@ p {}
 .discordLogin a {
     background: #7289DA;
     padding: 0 20px;
-    line-height: 35px;
+    line-height: 30px;
     color: #fff;
     font-family: 'Helvetica', 'Arial', sans-sefir;
     font-size: 20px;
     display: block;
     text-decoration: none;
     border-radius: 3px;
+}
+
+@media only screen and (max-width: 480px) {
+    #bodyholder {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media only screen and (min-width: 480px) {
+    #bodyholder {
+        min-width: 480px;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }

@@ -6,21 +6,30 @@ const db = new sqlite3.Database('data/botbase.db');
 //Custom Modules
 const logger = require('../modules/log.js');
 
+//TODO: Give drunkerhost badge
+
 exports.run = (discordClient, message, args) => {
-    db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
-        db.get("SELECT * FROM STREAM WHERE serverdiscordID = \'" + message.guild.id + "\'AND state = 1;", function(err, results) {
-            if (message.member.roles.has(SERVERres.modRoleID) || drunkerstatus.userdiscordID == message.author.id) {
+    db.get("SELECT * FROM t_guilds INNER JOIN t_streams ON t_guilds.guildDID = t_streams.guildDID WHERE t_guilds.guildDID = \'" + message.guild.id + "\';", function(err, results) {
+        if (err) {
+            logger.error(err);
+        } else {
+            if (message.member.roles.has(results.modRoleID) || results.userDID == message.author.id) {
                 if (results != undefined) {
-                    db.run("UPDATE STREAM SET end = " + moment().unix() + ", state = 0 WHERE state = 1;");
-                    logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
-                    message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
-                    message.member.removeRole(SERVERres.hostRoleID).catch(console.error);
-                    discordClient.user.setStatus('idle')
-                    discordClient.user.setPresence({
-                        game: {
-                            name: 'none',
-                            type: "none",
-                            url: 'none'
+                    db.run("UPDATE t_streams SET end = " + moment().unix() + " WHERE end IS NULL AND guildDID = \'" + message.guild.id + "\';", function(err) {
+                        if (err) {
+                            logger.error(err);
+                        } else {
+                            logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
+                            message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
+                            message.member.removeRole(results.hostRoleDID).catch(console.error);
+                            discordClient.user.setStatus('idle')
+                            discordClient.user.setPresence({
+                                game: {
+                                    name: 'none',
+                                    type: "none",
+                                    url: 'none'
+                                }
+                            });
                         }
                     });
                 } else {
@@ -30,6 +39,6 @@ exports.run = (discordClient, message, args) => {
             } else {
                 message.channel.send("Nice try, but only the Host or a Moderator can stop a drunkerbox stream!")
             }
-        });
+        }
     });
 }

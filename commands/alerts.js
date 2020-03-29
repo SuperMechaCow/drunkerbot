@@ -4,24 +4,27 @@ const db = new sqlite3.Database('data/botbase.db');
 
 //Custom Modules
 const logger = require('../modules/log.js');
+const newuser = require('../modules/newuser.js');
 
 exports.run = (discordClient, message, args) => {
     //TODO: COMBINE THESE TWO QUERIES INTO ONE WITH A JOIN
-    db.get("SELECT * FROM SERVER WHERE discordID = \'" + message.guild.id + "\';", function(err, SERVERres) {
-        db.all("SELECT * FROM USER WHERE discordID = \'" + message.author.id + "\';", function(err, results) {
-            if (results == "") {
+    db.get("SELECT * FROM t_guilds INNER JOIN t_users ON t_users.userDID = t_users.userDID WHERE t_users.userDID = \'" + message.author.id + "\';", function(err, results) {
+        if (err) {
+            logger.error(err);
+        } else {
+            if (results == undefined) {
                 console.log("Couldn't find that user");
-                users.newuser(message.author, message.member);
+                newuser(message.author, message.guild.id);
                 console.log("Created a new profile for: " + message.author.username + "#" + message.author.discriminator);
                 // Let the user know if it succeeded
-                message.member.addRole(SERVERres.alertRoleID).catch(console.error);
+                message.member.addRole(results.alertsRoleDID).catch(console.error);
                 message.author.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
             } else {
-                db.run("UPDATE USER SET alerts = " + !results[0].alerts + " WHERE discordID = \'" + message.author.id + "\';");
-                message.member.removeRole(SERVERres.alertRoleID).catch(console.error);
-                console.log(message.author.username + "#" + message.author.discriminator + " set their alerts to " + !results[0].alerts);
-                message.author.send("You set your alerts to " + !results[0].alerts);
+                db.run("UPDATE t_users SET alerts = " + !results.alerts + " WHERE userDID = \'" + message.author.id + "\';");
+                message.member.removeRole(results.alertsRoleDID).catch(console.error);
+                logger.verbose(message.author.username + "#" + message.author.discriminator + " set their alerts to " + !results.alerts);
+                message.author.send("You set your alerts to " + !results.alerts);
             }
-        });
+        }
     });
 }
