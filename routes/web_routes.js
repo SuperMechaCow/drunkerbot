@@ -21,6 +21,7 @@ web_routes.get('/', function(req, res) {
 web_routes.get('/login', function(req, res) {
 
     if (req.query.token != undefined) {
+        // res.header('Set-Cookie', 'authtoken=' + req.query.token);
         req.session.authtoken = req.query.token;
         res.redirect('/panel');
         return;
