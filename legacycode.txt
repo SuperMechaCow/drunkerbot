@@ -44,7 +44,7 @@
 // });
 //
 // var statusPromise = new Promise(function(resolve, reject) {
-//     db.get("SELECT * FROM t_streams WHERE end IS NULL;", function(err, results) {
+//     db.get("SELECT * FROM t_events WHERE end IS NULL;", function(err, results) {
 //         if (err) {
 //             logger.error(err);
 //         }
@@ -73,7 +73,7 @@
 // });
 //
 // var streamsPromise = new Promise(function(resolve, reject) {
-//     db.all("SELECT * FROM t_streams ORDER BY start DESC;", function(err, results) {
+//     db.all("SELECT * FROM t_events ORDER BY start DESC;", function(err, results) {
 //         if (err) {
 //             logger.error(err);
 //         }

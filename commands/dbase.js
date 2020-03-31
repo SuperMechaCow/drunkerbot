@@ -4,6 +4,13 @@ const db = new sqlite3.Database('data/botbase.db');
 
 //Custom Modules
 const logger = require('../modules/log.js');
+const settings = require('../modules/settings.js');
+
+exports.help = {
+    description: "Shows information about the Bot's database.", // Information about this command
+    usage: settings.prefix + "dbase", // How to use this command
+    docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/dbase.js" // URL to more information about or the code for this command
+}
 
 exports.run = (discordClient, message, args) => {
     db.all("SELECT * FROM t_users;", function(err, results) {
@@ -23,8 +30,8 @@ exports.run = (discordClient, message, args) => {
             statusdesc += "Messages sent: " + ttlcount + "\n";
             statusdesc += "Updoots: " + udccount + "\n";
             statusdesc += "Downdoots: " + ddccount + "\n";
-            var embed = new Discord.RichEmbed()
-            embed.addField("Drunkerbox Database Stats", statusdesc);
+            var embed = new Discord.MessageEmbed()
+            embed.addField("Event Database Stats", statusdesc);
             message.channel.send({
                 embed
             });

@@ -1,36 +1,16 @@
-const express = require('express');
-const app = express();
-const session = require('express-session')
+const fs = require('fs');
+const https = require('https');
+const webp = require('webp-converter');
 
-
-app.use(session({
-    name: 'sid',
-    resave: false,
-    saveUninitialized: false,
-    secret: 'changethissecretlater',
-    cookie: {
-        maxAge: 3600000,
-        sameSite: true,
-        secure: false
-    }
-}))
-
-const PORT = 3000;
-
-const users = [{
-    id: 1,
-    name: 'Bob',
-    email: 'bob@gmail.com',
-    password: 'secret'
-}]
-
-// start the server in the port 3000 !
-app.listen(PORT, function() {
-    console.log('Listening on port ' + PORT + '.');
+const avatarFile = fs.createWriteStream(__dirname + '/data/avatarFile.webp');
+const request = https.get('https://cdn.discordapp.com/avatars/99694104471932928/cb6035ec0252f4391c934f3a55d2aa4f.webp', function(response) {
+	response.pipe(avatarFile);
+    console.log(__dirname);
+	webp.dwebp(__dirname + '/data/avatarFile.webp', __dirname + '/data/avatarFile.png', '-o', function(status, error) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log(status);
+        }
+    });
 });
-
-app.get('/', (req, res) => {
-    console.log(req.session);
-    const {userID} = req.session;
-    res.send('Hello, ' + userID)
-})

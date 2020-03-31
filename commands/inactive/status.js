@@ -7,17 +7,17 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    db.get("SELECT * FROM t_streams WHERE end IS NULL;", function(err, results) {
-        var embed = new Discord.RichEmbed();
+    db.get("SELECT * FROM t_events WHERE end IS NULL;", function(err, results) {
+        var embed = new Discord.MessageEmbed();
         if (results != undefined) {
             var statusdesc = "Host: " + results.hostname + "\n Time started: " + moment.unix(results.start).format("MMM DD, hh:mm");
             embed.setImage(results.userAvatar);
             if (results.url != "none")
                 statusdesc += "\n Link: " + results.url;
         } else {
-            var statusdesc = "No drunkerbox is currently live";
+            var statusdesc = "No event is currently live";
         }
-        embed.addField("Drunkerbox Status", statusdesc)
+        embed.addField("Event Status", statusdesc)
             .setColor('BROWN');
         message.channel.send({
             embed

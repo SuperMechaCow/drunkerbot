@@ -10,13 +10,13 @@ const settings = require('../modules/settings.js');
 module.exports = (discordClient, message) => {
     logger.verbose(`Logged in as ${discordClient.user.tag}!`);
     discordClient.user.setStatus('idle');
-    //Mid-drunkerbox stream crash recovery
-    db.get("SELECT * FROM t_streams WHERE end IS NULL", function(err, results) {
+    //Mid-event stream crash recovery
+    db.get("SELECT * FROM t_events WHERE end IS NULL", function(err, results) {
         if (err) {
             logger.error(err)
         } else {
             if (results != undefined) {
-                db.run("UPDATE t_streams SET end = \'" + moment().unix() + "\' WHERE end IS NULL;");
+                db.run("UPDATE t_events SET end = \'" + moment().unix() + "\' WHERE end IS NULL;");
                 logger.warn("Old live-stream was stopped.");
             }
         }

@@ -13,23 +13,23 @@ exports.run = (discordClient, message, args) => {
             logger.error("Server query: " + err);
         } else {
             if (SERVres != undefined) {
-                db.get("SELECT * FROM t_streams WHERE end IS NULL", function(err, results) {
+                db.get("SELECT * FROM t_events WHERE end IS NULL", function(err, results) {
                     if (err) {
                         logger.error("Stream query: " + err);
                     } else {
                         if (results == undefined) {
                             if (args[0] != null) {
                                 //Validate the the URL here
-                                db.run("INSERT INTO t_streams (guildDID, userDID, userDname, userAvatar, url, start) VALUES (\'" + message.guild.id + "\', \'" + message.author.id + "\', \'" + message.author.username + "\', \'" + message.author.displayAvatarURL + "\', \'" + args[0] + "\', " + moment().unix() + ");", function(err) {
+                                db.run("INSERT INTO t_events (guildDID, userDID, userDname, userAvatar, url, start) VALUES (\'" + message.guild.id + "\', \'" + message.author.id + "\', \'" + message.author.username + "\', \'" + message.author.displayAvatarURL + "\', \'" + args[0] + "\', " + moment().unix() + ");", function(err) {
                                     if (err) {
                                         logger.error("INSERT query: " + err);
                                     } else {
-                                        logger.verbose(message.author.username + "#" + message.author.discriminator + " started a drunkerbox");
+                                        logger.verbose(message.author.username + "#" + message.author.discriminator + " started an event");
                                         message.member.addRole(SERVres.hostRoleDID);
-                                        var statusdesc = message.guild.roles.get(SERVres.alertsRoleDID).toString() + "\n\n" + message.author.username + "#" + message.author.discriminator + " started a Drunkerbox Livestream!\n\n" + args[0];
-                                        var embed = new Discord.RichEmbed()
+                                        var statusdesc = message.guild.roles.get(SERVres.alertsRoleDID).toString() + "\n\n" + message.author.username + "#" + message.author.discriminator + " started a Event Livestream!\n\n" + args[0];
+                                        var embed = new Discord.MessageEmbed()
                                             .setImage(message.author.displayAvatarURL)
-                                            .addField("Drunkerbox Status", statusdesc)
+                                            .addField("Event Status", statusdesc)
                                             .setColor('GOLD');
                                         message.channel.send({
                                             embed
@@ -45,7 +45,7 @@ exports.run = (discordClient, message, args) => {
                                     }
                                 });
                             } else {
-                                logger.verbose(message.author.username + "#" + message.author.discriminator + " attempted to start a drunkerbox, but did not set a URL.")
+                                logger.verbose(message.author.username + "#" + message.author.discriminator + " attempted to start an event, but did not set a URL.")
                                 message.author.send("Hey! You need to set the URL for the livestream!")
                             }
                         } else {

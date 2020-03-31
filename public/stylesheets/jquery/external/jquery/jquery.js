@@ -5699,7 +5699,7 @@ if ( !support.submit ) {
 				return false;
 			}
 
-			// Remove delegated handlers; cleanData eventually reaps submit handlers attached above
+			// Remove delegated handlers; cleanDatan eventually reaps submit handlers attached above
 			jQuery.event.remove( this, "._submit" );
 		}
 	};

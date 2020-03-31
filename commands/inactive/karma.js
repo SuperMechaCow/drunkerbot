@@ -22,7 +22,7 @@ exports.run = (discordClient, message, args) => {
             newuser(karmauser, message.guild.id);
             message.channel.send(message.mentions.users.first() + " didn\'t have a profile so I made one without their permission. They'll thank me later.");
         } else {
-            var embed = new Discord.RichEmbed()
+            var embed = new Discord.MessageEmbed()
             var statusdesc = "Updoots: " + results.updoots + "\nDowndoots: " + results.downdoots + "\nUpdoot Ratio: " + parseInt((results.updoots - results.downdoots) / settings.DOOTEE_BONUS) / results.messages;
             embed.addField(karmauser.username + "#" + karmauser.discriminator + "\nKarma Score:", statusdesc);
             message.channel.send({

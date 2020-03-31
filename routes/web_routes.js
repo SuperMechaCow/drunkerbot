@@ -86,7 +86,7 @@ web_routes.get('/guild/:guildDID', function(req, res) {
 });
 
 web_routes.get('/guild/:guildDID/stream', function(req, res) {
-    db.all("SELECT * FROM t_guilds LEFT OUTER JOIN t_streams ON t_guilds.guildDID = t_streams.guildDID WHERE t_guilds.guildDID = \'" + req.params.guildDID + "\';", function(err, results) {
+    db.all("SELECT * FROM t_guilds LEFT OUTER JOIN t_events ON t_guilds.guildDID = t_events.guildDID WHERE t_guilds.guildDID = \'" + req.params.guildDID + "\';", function(err, results) {
         if (err) {
             logger.error(err);
         } else {

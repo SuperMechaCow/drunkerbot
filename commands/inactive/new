@@ -5,7 +5,13 @@ const db = new sqlite3.Database('data/botbase.db');
 
 //Custom Modules
 const logger = require('../modules/log.js');
-const newuser = require('../modules/newuser.js');
+const settings = require('../modules/settings.js');
+
+exports.help = {
+    description: "", // Information about this command
+    usage: settings.prefix + "", // How to use this command
+    docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/" // URL to more information about or the code for this command
+}
 
 exports.run = (discordClient, message, args) => {
     //This is a command template
