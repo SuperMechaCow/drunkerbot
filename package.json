@@ -1,7 +1,7 @@
-SuperMechaCow{
+{
   "name": "drunkerbot",
   "version": "1.0.0",
-  "description": "A bot fro doing things humans are too drunk to do",
+  "description": "A bot for doing things humans are too drunk to do",
   "main": "dbot.js",
   "dependencies": {
     "body-parser": "^1.19.0",

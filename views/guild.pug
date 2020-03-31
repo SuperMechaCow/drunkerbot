@@ -1,7 +1,7 @@
 extends header
 block content
     div#banner
-        a(href='')
+        a(href='/guild/' + top10[0].guildDID)
             h1= t_guilds.guildName
     a(href= t_guilds.guildDID + '/stream') Live Streams
     br
