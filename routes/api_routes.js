@@ -100,7 +100,7 @@ api_routes.get('/guild/:guildDID/top10/:channelDID', function(req, res) {
 
 api_routes.get('/guild/:guildDID/status/', function(req, res) {
     res.set('Content-Type', 'application/json');
-    db.get("SELECT * FROM t_streams WHERE guildDID = \'" + req.params.guildDID + "\' AND end IS NULL;", function(err, results) {
+    db.get("SELECT * FROM t_events WHERE guildDID = \'" + req.params.guildDID + "\' AND end IS NULL;", function(err, results) {
         if (err) {
             logger.error(err);
             res.send(err);

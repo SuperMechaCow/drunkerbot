@@ -1,28 +1,36 @@
-{
+SuperMechaCow{
   "name": "drunkerbot",
   "version": "1.0.0",
-  "description": "For getting drunk and doing dangerous things",
+  "description": "A bot fro doing things humans are too drunk to do",
   "main": "dbot.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "btoa": "^1.2.1",
+    "canvas": "^2.6.1",
+    "discord.js": "^12.1.1",
+    "enmap": "^5.2.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "moment": "^2.24.0",
+    "pug": "^2.0.4",
+    "reddit-snooper": "^1.0.1",
+    "sqlite3": "^4.1.1",
+    "urban-dictionary": "^2.2.1",
+    "webp-converter": "^2.2.3",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SuperMechaCow/drunkerbot.git"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "btoa": "^1.2.1",
-    "canvas": "^2.4.1",
-    "discord.js": "^11.4.2",
-    "enmap": "^4.8.4",
-    "express": "^4.16.4",
-    "express-session": "^1.16.1",
-    "moment": "^2.22.2",
-    "node-fetch": "^2.3.0",
-    "node-pre-gyp": "^0.12.0",
-    "pug": "^2.0.3",
-    "reddit-snooper": "^1.0.1",
-    "sqlite3": "^4.0.6",
-    "urban-dictionary": "^2.2.1",
-    "url-exists": "^1.0.3",
-    "winston": "^3.1.0"
-  }
+  "bugs": {
+    "url": "https://github.com/SuperMechaCow/drunkerbot/issues"
+  },
+  "homepage": "https://github.com/SuperMechaCow/drunkerbot#readme"
 }

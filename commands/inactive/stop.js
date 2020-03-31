@@ -9,18 +9,18 @@ const logger = require('../modules/log.js');
 //TODO: Give drunkerhost badge
 
 exports.run = (discordClient, message, args) => {
-    db.get("SELECT * FROM t_guilds INNER JOIN t_streams ON t_guilds.guildDID = t_streams.guildDID WHERE t_guilds.guildDID = \'" + message.guild.id + "\';", function(err, results) {
+    db.get("SELECT * FROM t_guilds INNER JOIN t_events ON t_guilds.guildDID = t_events.guildDID WHERE t_guilds.guildDID = \'" + message.guild.id + "\';", function(err, results) {
         if (err) {
             logger.error(err);
         } else {
             if (message.member.roles.has(results.modRoleID) || results.userDID == message.author.id) {
                 if (results != undefined) {
-                    db.run("UPDATE t_streams SET end = " + moment().unix() + " WHERE end IS NULL AND guildDID = \'" + message.guild.id + "\';", function(err) {
+                    db.run("UPDATE t_events SET end = " + moment().unix() + " WHERE end IS NULL AND guildDID = \'" + message.guild.id + "\';", function(err) {
                         if (err) {
                             logger.error(err);
                         } else {
-                            logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
-                            message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the drunkerbox");
+                            logger.verbose(message.author.username + "#" + message.author.discriminator + " stopped the event");
+                            message.channel.send(message.author.username + "#" + message.author.discriminator + " stopped the event");
                             message.member.removeRole(results.hostRoleDID).catch(console.error);
                             discordClient.user.setStatus('idle')
                             discordClient.user.setPresence({
@@ -37,7 +37,7 @@ exports.run = (discordClient, message, args) => {
                     logger.verbose("Stream is not currently active.");
                 }
             } else {
-                message.channel.send("Nice try, but only the Host or a Moderator can stop a drunkerbox stream!")
+                message.channel.send("Nice try, but only the Host or a Moderator can stop an event stream!")
             }
         }
     });

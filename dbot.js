@@ -1,15 +1,16 @@
+// Load modules we will use in this bot
 const Discord = require('discord.js'); //Load Discord library and create a new client
 const discordClient = new Discord.Client();
 const express = require('express'); //Express framework
-const app = express();
+const app = express(); //New express application object
 const path = require('path'); //Express directory handling
 const fs = require('fs'); //Interacting with filesystem
 const Enmap = require("enmap");
 const moment = require('moment'); //Handling datestamps and time formats
 const bodyParser = require('body-parser'); //Parses data from http request bodies
 const sqlite3 = require('sqlite3'); //Interfaces with sqlite3 database
-const db = new sqlite3.Database('data/botbase.db');
-const session = require('express-session');
+const db = new sqlite3.Database('data/botbase.db'); //Create a new database object
+const session = require('express-session'); //For tracking user session logins
 
 //const urlExists = require('url-exists'); //Validates URLs
 var Snooper = require('reddit-snooper'); //Reddit wrapper and API library
@@ -110,16 +111,21 @@ app.listen(config.PORT, function() {
 */
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
+//Read all files in this directory
 fs.readdir("./events/", (err, files) => {
+    //If the err object has a value, stop the function and return that error
     if (err) return logger.error(err);
+    //Loop through each file found
     files.forEach(file => {
         // If the file is not a JS file, ignore it (thanks, Apple)
         if (!file.endsWith(".js")) return;
-        // Load the event file itself
+        // Load the event file
         const event = require('./events/' + file);
         // Get just the event name from the file name
         let eventName = file.split(".")[0];
+        // Create a new event listener that fires the exported function
         discordClient.on(eventName, event.bind(null, discordClient));
+        // Remove this event from the require cache so we don't use it elsewhere
         delete require.cache[require.resolve('./events/' + file)];
     });
 });
@@ -135,7 +141,7 @@ fs.readdir("./commands/", (err, files) => {
         // Get just the command name from the file name
         let commandName = file.split(".")[0];
         //logger.verbose(`Attempting to load command ${commandName}`);
-        // Here we simply store the whole thing in the command Enmap. We're not running it right now.
+        // Here we simply store the whole thing in an Enmap. We're not running it right now.
         discordClient.commands.set(commandName, props);
     });
 });

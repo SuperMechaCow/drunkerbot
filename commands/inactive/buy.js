@@ -26,7 +26,7 @@ exports.run = (discordClient, message, args) => {
                     db.run("UPDATE t_catalogue SET item_stock = " + parseInt(results.item_stock - args[1]) + " WHERE TID = " + args[0] + ";", function(error) {
                         if (!error) {
                             //If no error, let the user know
-                            const embed = new Discord.RichEmbed()
+                            const embed = new Discord.MessageEmbed()
                                 .setTitle("New Purchase Order")
                                 .setColor('GREEN')
                                 .addField("Sold!", message.author.username + "#" + message.author.discriminator + " in " + discordClient.users.find(guild => guild.id === results.guildDID).name + " purchased " + args[1] + " of your " + results.cat_name + "!");

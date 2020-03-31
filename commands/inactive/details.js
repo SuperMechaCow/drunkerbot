@@ -11,7 +11,7 @@ exports.run = (discordClient, message, args) => {
             if (results == undefined) {
                 message.channel.send("Couldn't find that item!\n\n**!#details <Item ID>**");
             } else {
-                const embed = new Discord.RichEmbed()
+                const embed = new Discord.MessageEmbed()
                     .setTitle(results.cat_name)
                     .setColor('GREEN')
                     .addField(discordClient.users.find(user => user.id === results.sellerDID).username, results.cat_desc + "\n" + results.item_stock + " in stock [" + results.item_status + "]");

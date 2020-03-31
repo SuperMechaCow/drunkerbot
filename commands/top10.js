@@ -11,6 +11,13 @@ const {
 
 //Custom Modules
 const logger = require('../modules/log.js');
+const settings = require('../modules/settings.js');
+
+exports.help = {
+    description: "Shows the top ten users who sent the most messages in this channel.", // Information about this command
+    usage: settings.prefix + "top10", // How to use this command
+    docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/top10.js" // URL to more information about or the code for this command
+}
 
 exports.run = (discordClient, message, args) => {
     db.all("SELECT * FROM t_messages WHERE channelDID = \'" + message.channel.id + "\' AND guildDID = \'" + message.guild.id + "\' ORDER BY message_count DESC LIMIT 10;", function(err, results) {
@@ -37,6 +44,7 @@ exports.run = (discordClient, message, args) => {
                 const ctx = canvas.getContext('2d')
 
                 loadImage(__dirname + '/../data/nameBar.png').then((nameBar) => {
+
                     results.forEach(function(item, index) {
                         //Draw the playercard background
                         ctx.drawImage(nameBar, 0, index * (bH + bM), bW, bH);
@@ -44,7 +52,7 @@ exports.run = (discordClient, message, args) => {
                         ctx.textAlign = 'left'
                         ctx.font = '16px Courier'
                         ctx.fillStyle = 'rgba(255,255,255,1)';
-                        ctx.fillText(discordClient.users.find(user => user.id === item.userDID).username, textOffsetX, textOffsetY + (index * (bH + bM))); // User name
+                        ctx.fillText(discordClient.users.cache.find(user => user.id === item.userDID).username, textOffsetX, textOffsetY + (index * (bH + bM))); // User name
                         ctx.textAlign = 'right'
                         ctx.fillText(item.message_count + '💬', canW - textOffsetX, textOffsetY + (index * (bH + bM))); // User name
                     });
@@ -52,10 +60,10 @@ exports.run = (discordClient, message, args) => {
                     const stream = canvas.createPNGStream();
                     stream.pipe(out);
                     out.on('finish', () => {
-                        const attachment = new Discord.Attachment(__dirname + '/../data/tempTop10.png', 'tempTop10.png');
-                        const embed = new Discord.RichEmbed()
-                            .setTitle("#" + discordClient.channels.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10")
-                            .attachFile(attachment)
+                        const attachment = new Discord.MessageAttachment(__dirname + '/../data/tempTop10.png', 'tempTop10.png');
+                        const embed = new Discord.MessageEmbed()
+                            .setTitle("#" + discordClient.channels.cache.find(channel => channel.id === message.channel.id).name.toUpperCase() + " Top 10")
+                            .attachFiles([attachment])
                             .setImage('attachment://tempTop10.png')
                         //.addField("Joined on: ", moment.unix(whoismember.joinedTimestamp).format('MM/DD/YY'));
                         message.channel.send({

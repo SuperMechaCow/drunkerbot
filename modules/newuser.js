@@ -12,7 +12,7 @@ const newuser = function(newuserauthor, newguild) {
         } else {
             // Let the user know if it succeeded
             logger.verbose("Created a new profile for: " + newuserauthor.username);
-            newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
+            // newuserauthor.send("Hi! I created a new profile for you!\n\nYour alerts are set to false.\nUse \"!db alerts\" to sign up for alerts.");
         }
     });
 }

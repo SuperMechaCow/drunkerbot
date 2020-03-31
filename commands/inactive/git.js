@@ -6,9 +6,9 @@ const db = new sqlite3.Database('data/botbase.db');
 const logger = require('../modules/log.js');
 
 exports.run = (discordClient, message, args) => {
-    var statusdesc = "You can find my code at:\nhttps://github.com/HardWareFlare/drunkerbot\n\nYou can find the drunkertracker code at:\nhttps://github.com/IntPirate/DrunkerBoxes";
-    var embed = new Discord.RichEmbed()
-    embed.addField("Drunkerbox Git Repo", statusdesc)
+    var statusdesc = "You can find my code at:\nhttps://github.com/SuperMechaCow/drunkerbot\n\n;
+    var embed = new Discord.MessageEmbed()
+    embed.addField("Event Git Repo", statusdesc)
     message.channel.send({
         embed
     });

@@ -5,7 +5,7 @@ const logger = require('../modules/log.js');
 function newsnoo(data, datatype) {
     logger.verbose('/u/' + data.data.author + ' made a new ' + datatype + ':');
     //console.log(data.data);
-    var embed = new Discord.RichEmbed();
+    var embed = new Discord.MessageEmbed();
     if (datatype == 'comment') {
         var statusdesc = '\`\`\`' + data.data.body + '\`\`\`\n';
         embed.addField(data.data.link_title, statusdesc);

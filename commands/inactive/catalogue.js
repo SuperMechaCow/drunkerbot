@@ -10,7 +10,7 @@ exports.run = (discordClient, message, args) => {
         if (results == "") {
             message.channel.send("There is nothing for sale.");
         } else {
-            const embed = new Discord.RichEmbed()
+            const embed = new Discord.MessageEmbed()
                 .setTitle("Trading Post Catalogue")
                 .setColor('GREEN');
             results.forEach(function(item, index) {
