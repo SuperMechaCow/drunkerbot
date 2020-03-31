@@ -20,6 +20,7 @@ exports.help = {
     usage: settings.prefix + "whois [@user] [250x100px image attachment]\r\n(Show your playercard, a mentioned user's playercard, or change your playercard background)", // How to use this command
     docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/whois.js" // URL to more information about or the code for this command
 }
+//TODO: Deleting the message that uploaded the background image that will cause a crash
 
 function barwidth(floor, ceiling, current, barWidthMax) {
 	var cX = current - floor; //Current level experience
