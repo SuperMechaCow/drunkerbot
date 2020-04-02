@@ -1,7 +1,7 @@
 const Discord = require('discord.js'); //Load Discord library and create a new client
 const express = require('express');
 const app = express();
-const web_routes = express.Router();
+const expressRouter = express.Router();
 const fetch = require('node-fetch');
 const sqlite3 = require('sqlite3'); //Interfaces with sqlite3 database
 const db = new sqlite3.Database('data/botbase.db');
@@ -14,11 +14,13 @@ const settings = require('../modules/settings.js');
 const config = require('../modules/config.js');
 const grabapi = require('../modules/grabapi.js');
 
-web_routes.get('/', function(req, res) {
+let route = '/';
+
+expressRouter.get('/', function(req, res) {
     res.render('index');
 });
 
-web_routes.get('/login', function(req, res) {
+expressRouter.get('/login', function(req, res) {
 
     if (req.query.token != undefined) {
         // res.header('Set-Cookie', 'authtoken=' + req.query.token);
@@ -33,7 +35,7 @@ web_routes.get('/login', function(req, res) {
 
 });
 
-web_routes.get('/panel', function(req, res) {
+expressRouter.get('/panel', function(req, res) {
 
     if (res.locals.userstuff) {
         db.all("SELECT * FROM t_guilds LEFT OUTER JOIN t_users ON t_guilds.guildDID = t_users.guildDID WHERE t_users.userDID = \'" + res.locals.userstuff.id + "\';", function(err, results) {
@@ -56,7 +58,7 @@ web_routes.get('/panel', function(req, res) {
 
 //TODO: Check to make sure the user or guild exists before trying to retrieve info
 
-web_routes.get('/guild/:guildDID', function(req, res) {
+expressRouter.get('/guild/:guildDID', function(req, res) {
     db.get("SELECT * FROM t_guilds WHERE t_guilds.guildDID = \'" + req.params.guildDID + "\';", function(err, results) {
         //This line is just for testing purposes
         // console.log(discordClient.guilds.find(guild => guild.id === req.params.guildDID));
@@ -85,7 +87,7 @@ web_routes.get('/guild/:guildDID', function(req, res) {
     });
 });
 
-web_routes.get('/guild/:guildDID/stream', function(req, res) {
+expressRouter.get('/guild/:guildDID/stream', function(req, res) {
     db.all("SELECT * FROM t_guilds LEFT OUTER JOIN t_events ON t_guilds.guildDID = t_events.guildDID WHERE t_guilds.guildDID = \'" + req.params.guildDID + "\';", function(err, results) {
         if (err) {
             logger.error(err);
@@ -119,7 +121,7 @@ web_routes.get('/guild/:guildDID/stream', function(req, res) {
     });
 });
 
-web_routes.get('/guild/:guildDID/top10', function(req, res) {
+expressRouter.get('/guild/:guildDID/top10', function(req, res) {
     db.all("SELECT * FROM t_guilds LEFT OUTER JOIN t_users ON t_guilds.guildDID = t_users.guildDID WHERE t_users.guildDID = \'" + req.params.guildDID + "\' ORDER BY message_count DESC LIMIT 10;", function(err, results) {
         if (err) {
             logger.error(err);
@@ -139,7 +141,7 @@ web_routes.get('/guild/:guildDID/top10', function(req, res) {
     });
 });
 
-web_routes.get('/guild/:guildDID/top10/:channelDID', function(req, res) {
+expressRouter.get('/guild/:guildDID/top10/:channelDID', function(req, res) {
     db.all("SELECT * FROM t_messages WHERE channelDID = \'" + req.params.channelDID + "\' AND guildDID = \'" + req.params.guildDID + "\' ORDER BY message_count DESC LIMIT 10;", function(err, results) {
         if (err) {
             logger.error(err);
@@ -147,7 +149,7 @@ web_routes.get('/guild/:guildDID/top10/:channelDID', function(req, res) {
             if (results == "") {
                 res.render('oops', {
                     message: 'Couldn\'t find any users for this channel'
-                })
+                });
             } else {
                 res.render('top10', {
                     botstuff: res.locals.botstuff,
@@ -159,9 +161,9 @@ web_routes.get('/guild/:guildDID/top10/:channelDID', function(req, res) {
     });
 });
 
-web_routes.get('/logout', function(req, res) {
+expressRouter.get('/logout', function(req, res) {
     req.session.destroy();
     res.redirect('/');
 });
 
-module.exports = web_routes;
+module.exports = {expressRouter, route};

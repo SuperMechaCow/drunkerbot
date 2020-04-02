@@ -32,6 +32,8 @@ const logger = require('./modules/log.js');
 const newuser = require('./modules/newuser.js');
 const newsnoo = require('./modules/newsnoo.js');
 const grabapi = require('./modules/grabapi.js');
+const commands = require('./modules/commands.js');
+
 
 /*
 ███████ ██   ██ ██████  ██████  ███████ ███████ ███████
@@ -89,12 +91,7 @@ app.use((err, req, res, next) => {
     }
 });
 
-// Routes
-app.use('/api/discord', require('./routes/discord'));
-app.use('/api/v1', require('./routes/api_routes'));
-app.use('/', require('./routes/web_routes'));
-
-// Login from envar
+// Login from config.js
 discordClient.login(config.BOTSECRET);
 
 // start the server in the port 3000 !
@@ -130,21 +127,26 @@ fs.readdir("./events/", (err, files) => {
     });
 });
 
-discordClient.commands = new Enmap();
-
-fs.readdir("./commands/", (err, files) => {
+//Load express web routes
+fs.readdir('./routes/', (err, files) => {
     if (err) return console.error(err);
     files.forEach(file => {
-        if (!file.endsWith(".js")) return;
-        // Load the command file itself
-        let props = require(`./commands/${file}`);
-        // Get just the command name from the file name
-        let commandName = file.split(".")[0];
-        //logger.verbose(`Attempting to load command ${commandName}`);
-        // Here we simply store the whole thing in an Enmap. We're not running it right now.
-        discordClient.commands.set(commandName, props);
+        if (!file.endsWith('.js')) return;
+        // Get just the route name from the file name
+        let routeName = file.split('.')[0];
+        // Load the route file itself
+        let props = require(`./routes/${routeName}`);
+        try {
+            app.use(props.route, props.expressRouter);
+        } catch (error) {
+            console.error(error);
+        }
     });
 });
+
+//load commands here
+discordClient.commands = new Enmap();
+commands.load(discordClient);
 
 /*
 ██████  ███████ ██████  ██████  ██ ████████     ███████ ███    ██  ██████   ██████  ██████  ███████ ██████
