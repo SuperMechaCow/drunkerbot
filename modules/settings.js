@@ -14,7 +14,10 @@ const settings = {
         "url": null,
         "start": null,
         "end": null
-    }
+    },
+    urlAPI: 'http://localhost:3000/api/v1/',
+    urlWEB: 'http://localhost:3000/',
+    urlGIT: 'http://www.github.com/SuperMechaCow/drunkerbot'
 }
 
 module.exports = settings;

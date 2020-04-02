@@ -27,23 +27,6 @@ exports.run = (discordClient, message, args) => {
 			message.channel.send('', embed);
 		}
 	} else {
-		//**!#ping\n** Ping the bot
-		//**!#roll\n** Random number between 1 and 20
-		//**!#start <url>\n** Start an event stream and link to the provided <url>
-		//**!#stop\n** Stop and clear the event
-		//**!#status\n** Display summary of the currently running event stream
-		//**!#dbase\n** Display stats about the DrunkerBoxes database
-		//**!#about\n** Display stats about drunkerbot
-		//**!#git\n** Links to Eventes related Git Repos
-		//**!#alerts\n** Toggle alerts for DrunkerBoxes for yourself
-		//**!#api\n** Drunkerbot API information
-		//**!#karma\n** Check your or <mention>\'s Karma breakdown
-		//**!#whois <mention>\n** Check your or <mention>\'s Player Card\'
-		//**!#top10\n** Top 10 in messages sent in the current channel
-		//**!#sell <quantity> <USD price> \"<Name>\" \"<Description>\"\n** Sell a thing! *(must use double quotes!)*
-		//**!#buy <item ID> <quantity>\n** Send a purchase order to the seller.
-		//**!#catalogue\n** List what's for sale and find the item IDs
-		//**!#status <item ID> <available/unavailable>\n** Change the status of an item you are selling.
 		var statusdesc = "";
 		fs.readdir("./commands/", (err, files) => {
 			if (err) return logger.error(err);
@@ -58,7 +41,7 @@ exports.run = (discordClient, message, args) => {
 			var embed = new Discord.MessageEmbed()
 				.setTitle("Drunkerbot Help")
 				.addField("Available Commands:", statusdesc)
-				.addField("Specific Usage:", "*!#help <command>*")
+				.addField("Specific Usage:", "*" + settings.prefix + "help <command>*")
 			message.channel.send({
 				embed
 			});

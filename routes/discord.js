@@ -1,5 +1,5 @@
 const express = require('express');
-const discord_route = express.Router();
+const expressRouter = express.Router();
 const fetch = require('node-fetch');
 const btoa = require('btoa');
 const {
@@ -7,22 +7,23 @@ const {
 } = require('../modules/utils');
 
 const app = express();
-app.use('/', require('../routes/web_routes'));
+app.use('/', require('../routes/web_routes').expressRouter);
 
 const config = require('../modules/config.js');
 
-//THE CORRECT WAY
+let route = '/discord';
+
 const CLIENT_ID = config.CLIENT_ID;
 const CLIENT_SECRET = config.CLIENT_SECRET;
 
 const redirect = encodeURIComponent(config.oauth2redirect);
 
-discord_route.get('/login', (req, res) => {
+expressRouter.get('/login', (req, res) => {
     res.redirect(`https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=identify%20guilds&response_type=code&redirect_uri=${redirect}`);
     // res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=517521443869687818&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&scope=identify`);
 });
 
-discord_route.get('/callback', catchAsync(async (req, res) => {
+expressRouter.get('/callback', catchAsync(async (req, res) => {
     if (!req.query.code) {
         //throw new Error('NoCodeProvided');
         res.redirect(`/`);
@@ -46,4 +47,4 @@ discord_route.get('/callback', catchAsync(async (req, res) => {
 
 }));
 
-module.exports = discord_route;
+module.exports = {expressRouter, route};
