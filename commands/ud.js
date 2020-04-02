@@ -36,8 +36,8 @@ exports.run = (discordClient, message, args) => {
         var embed = new Discord.MessageEmbed()
         embed.setTitle(args[0])
             .addField("OOPS!", 'I need a word/phrase in double quotes to look up!')
-            .addField("Usage", cmd.help.usage)
-            .setURL(cmd.help.docs);
+            .addField("Usage", discordClient.commands.get('help').usage)
+            .setURL(discordClient.commands.get('help').docs);
         message.channel.send('', embed);
     }
 }
