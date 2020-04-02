@@ -1,3 +1,7 @@
+### [MINOR] 3.3.0
+- Added 'role', 'unrole', and 'makerole' to inactive commands
+- Fixed 'git' command error
+
 ### [MINOR] 3.2.0
 - Express routes now loaded automatically from 'routes' folder
 - Fixed loading prefix for commands from settings.js

@@ -25,7 +25,6 @@ exports.run = (discordClient, message, args) => {
         //Glue the remaing arguments back together to create a complete roll name
         args.shift();
         let role = args.join(" ");
-        console.log(role)
         //If they didn't provide any extra arguments, return with a message
         if (!role) return message.reply("Specify a role!");
         // find the role to add the targetted user to
@@ -34,12 +33,12 @@ exports.run = (discordClient, message, args) => {
         if (!gRole) return message.reply("Conldn't find that role.");
                // If the targetted user already has that roll
         if (rMember.roles.cache.find(Role => Role.name === gRole.name)) {
-            // return with a message
-            return message.reply("They are already in that role")
-        } else {
             // otherwise, add the targetted user to the role
-            rMember.roles.add(gRole);
-            message.channel.send(`Congrats, you have been given the role: ${gRole.name}`)
+            rMember.roles.remove(gRole);
+            message.channel.send(`Congrats, you have been UNgiven the role: ${gRole.name}`)
+        } else {
+            // return with a message
+            return message.reply("They are already not in that role")
         }
     } catch (e) {
         console.error(e);

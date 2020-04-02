@@ -40,10 +40,10 @@ exports.run = (discordClient, message, args) => {
 						tags += ', ';
 					}
 					tags += tag.tag;
-				})
+				});
 				var embed = new Discord.MessageEmbed()
 				embed.setTitle(data.title)
-                .addField("Description:", data.description)
+					.addField("Description:", data.description)
 					.addField("Tags:", tags)
 					.setImage(data.preview_url)
 					.setURL('https://steamcommunity.com/sharedfiles/filedetails/?id=' + args[0]);
