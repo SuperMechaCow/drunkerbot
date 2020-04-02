@@ -1,5 +1,5 @@
 const settings = {
-    'appver' : '3.1.0',
+    'appver' : '3.2.2',
     'prefix' : '!#',
     'TIMERRESET': 15, // Number of seconds before getting more exp
     'LEVELMULTIPLIER': 100, // You need this much experience * your current level to level up
