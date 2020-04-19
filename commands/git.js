@@ -7,7 +7,7 @@ const logger = require('../modules/log.js');
 const settings = require('../modules/settings.js');
 
 exports.run = (discordClient, message, args) => {
-    var statusdesc = "You can find my code at:\n" + setting.urlGIT + "\n\n";
+    var statusdesc = "You can find my code at:\n" + settings.urlGIT + "\n\n";
     var embed = new Discord.MessageEmbed()
     embed.addField("Drunkerbot Git Repo", statusdesc)
     message.channel.send({

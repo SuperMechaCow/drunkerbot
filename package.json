@@ -14,6 +14,7 @@
     "moment": "^2.24.0",
     "pug": "^2.0.4",
     "reddit-snooper": "^1.0.1",
+    "request": "^2.88.2",
     "sqlite3": "^4.1.1",
     "urban-dictionary": "^2.2.1",
     "webp-converter": "^2.2.3",

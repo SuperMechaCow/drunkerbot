@@ -3,6 +3,7 @@ const moment = require('moment'); //Handling datestamps and time formats
 const sqlite3 = require('sqlite3'); //Interfaces with sqlite3 database
 const db = new sqlite3.Database('data/botbase.db');
 const fs = require('fs');
+const request = require('request');
 
 //Custom Modules
 const logger = require('../modules/log.js');
@@ -15,23 +16,28 @@ exports.help = {
 }
 
 exports.run = (discordClient, message, args) => {
-	fs.readdir(__dirname + '/../data/cats/', function(error, catFiles) {
-		// the folder is __dirname + '/../data/cats/'
-		// each cat image must start with 'cat'
-		// they are enumerated by number
-		// must be .jpg
-		// example is 'cat1.jpg'
-		let validCatFiles = []
-		for (let i = 0; i < catFiles.length; i++) {
-			if (catFiles[i].toLowerCase().split(".")[1] == "jpg") {
-				validCatFiles.push(catFiles[i]);
+	if (message.attachments.size) {
+		request.get(message.attachments.first().url)
+			.pipe(fs.createWriteStream(__dirname + '/../data/cats/cat' + Date.now() + '.jpg'));
+	} else {
+		fs.readdir(__dirname + '/../data/cats/', function(error, catFiles) {
+			// the folder is __dirname + '/../data/cats/'
+			// each cat image must start with 'cat'
+			// they are enumerated by number
+			// must be .jpg
+			// example is 'cat1.jpg'
+			let validCatFiles = []
+			for (let i = 0; i < catFiles.length; i++) {
+				if (catFiles[i].toLowerCase().split(".")[1] == "jpg") {
+					validCatFiles.push(catFiles[i]);
+				}
 			}
-		}
-		const attachment = new Discord.MessageAttachment(__dirname + '/../data/cats/' + validCatFiles[Math.floor(Math.random() * validCatFiles.length)], 'cat.jpg');
-		const embed = new Discord.MessageEmbed()
-			.setTitle('A Cat')
-			.attachFiles([attachment])
-			.setImage('attachment://cat.jpg');
-		message.channel.send('', embed);
-	});
+			const attachment = new Discord.MessageAttachment(__dirname + '/../data/cats/' + validCatFiles[Math.floor(Math.random() * validCatFiles.length)], 'cat.jpg');
+			const embed = new Discord.MessageEmbed()
+				.setTitle('A Cat')
+				.attachFiles([attachment])
+				.setImage('attachment://cat.jpg');
+			message.channel.send('', embed);
+		});
+	}
 }
