@@ -8,14 +8,14 @@ const settings = require('../modules/settings.js');
 
 exports.help = {
 	description: "Lookup a map by its workshop ID.", // Information about this command
-	usage: settings.prefix + "pt_lookup <workshop ID>", // How to use this command
+	usage: settings.prefix + "workshop <workshop ID>", // How to use this command
 	docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/pt_lookup" // URL to more information about or the code for this command
 }
 
 exports.run = (discordClient, message, args) => {
 	if (!args[0]) {
 		message.channel.send("Workshop ID required.");
-		discordClient.commands.get('help').run(discordClient, message, ['pt_lookup']);
+		discordClient.commands.get('help').run(discordClient, message, ['workshop']);
 	} else {
 		request.post({
 			url: 'https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/',
