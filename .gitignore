@@ -5,6 +5,7 @@ data/tempCard.png
 data/tempTop10.png
 data/avatarFile.png
 data/avatarFile.webp
+data/cats/
 modules/config.js
 node_modules/
 test.js
