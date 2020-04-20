@@ -61,25 +61,27 @@ function startPlaytest(mapTest) {
 			}
 		} else {
 			logger.verbose("Playtest live");
-			let utcOS = 0;
-			if (moment().isDST()) {
-				utcOS = -240;
-			} else {
-				utcOS = -300;
-			}
-			let time = moment().utcOffset(utcOS).unix(mapTest.time);
-			let data = JSON.parse(body).response.publishedfiledetails[0];
-			var embed = new Discord.MessageEmbed();
-			embed.setTitle("Playtest is live:")
-				.addField("Map Name:", data.title)
-				.addField("Playtest Started:", time)
-				.addField("Description:", data.description)
-				.addField("Gamemode being tested:", mapTest.type)
-				.setImage(data.preview_url)
+            let utcOS = 0;
+            if (moment().isDST()) {
+                utcOS = -240;
+            } else {
+                utcOS = -300;
+            }
+            let time = moment(mapTest.time).utcOffset(utcOS).format("HH:mm DD/MM/YY");
+            let data = JSON.parse(body).response.publishedfiledetails[0];
+            let playtestRole = discordClient.guilds.cache.get(mapTest.guildDID).roles.cache.find(role => role.name === 'Playtester');
+            var embed = new Discord.MessageEmbed();
+            embed.setTitle("Playtest is live:")
+                .addField("Map Name:", data.title)
+                .addField("Playtest Started:", time)
+                .addField("Description:", data.description)
+                .addField("Gamemode being tested:", mapTest.type)
+                .setImage(data.preview_url)
+                .setColor('RED')
                 .setURL(`${settings.urlWEB}steamgame?ip=${config.GAMESERV_IP}&port=${config.GAMESERV_PORT}`);
-				//.setURL(`steam://connect/${config.GAMESERV_IP}:${config.GAMESERV_PORT}`); //This doesn't work >:[
-			let mapChannel = discordClient.guilds.cache.get(mapTest.guildDID).channels.cache.find(channel => channel.name === 'playtest');
-			mapChannel.send('', embed);
+            //.setURL(`steam://connect/${config.GAMESERV_IP}:${config.GAMESERV_PORT}`); //This doesn't work >:[
+            let mapChannel = discordClient.guilds.cache.get(mapTest.guildDID).channels.cache.find(channel => channel.name === 'playtest');
+            mapChannel.send(playtestRole, embed);
 		}
 	});
 }

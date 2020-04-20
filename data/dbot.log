@@ -310,3 +310,75 @@ Console: "Entering Pre-playtest..."
 (2020-04-20 11:20:37) [[36mverbose[39m]: Logged in as The Green Man#2476!
 (2020-04-20 11:20:37) [[36mverbose[39m]: Running appver 0.1.0
 (2020-04-20 11:20:59) [[36mverbose[39m]: Playtest live
+(2020-04-20 11:38:25) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:38:25) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:38:25) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:38:26) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:38:26) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:39:00) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:39:00) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:39:00) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:39:01) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:39:01) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:39:30) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
+(2020-04-20 11:39:31) [[36mverbose[39m]: Created a message counter combo for: JonyDrake
+(2020-04-20 11:40:44) [[36mverbose[39m]: Playtest live
+(2020-04-20 11:45:56) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:45:57) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:45:57) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:45:58) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:45:58) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:46:26) [[36mverbose[39m]: Playtest live
+(2020-04-20 11:46:53) [[33mwarn[39m]: Couldn't find that user
+(2020-04-20 11:46:53) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
+(2020-04-20 11:46:53) [[36mverbose[39m]: Created a new profile for: Coachi
+(2020-04-20 11:46:54) [[36mverbose[39m]: Created a message counter combo for: Coachi
+(2020-04-20 11:48:32) [[36mverbose[39m]: Time Check! 1587397712
+(2020-04-20 11:49:41) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:49:42) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:49:42) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:49:43) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:49:43) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:50:07) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:08) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:09) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:10) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:11) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:12) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:13) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:14) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:15) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:16) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:17) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:18) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:19) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:20) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:21) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:22) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:23) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:24) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:25) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:26) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:27) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:28) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:29) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:30) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:31) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:32) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:33) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:34) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:35) [[31merror[39m]: SQLITE_BUSY: database is locked
+(2020-04-20 11:50:36) [[36mverbose[39m]: Playtest live
+(2020-04-20 11:50:40) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:50:41) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:50:41) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:50:42) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:50:42) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:52:22) [[36mverbose[39m]: Listening on port 3000.
+(2020-04-20 11:52:23) [[36mverbose[39m]: Got response from game server: 
+(2020-04-20 11:52:23) [[36mverbose[39m]: Game server authorized!
+(2020-04-20 11:52:23) [[36mverbose[39m]: Logged in as The Green Man#2476!
+(2020-04-20 11:52:23) [[36mverbose[39m]: Running appver 0.1.0
+(2020-04-20 11:52:37) [[36mverbose[39m]: Playtest live
+(2020-04-20 12:03:11) [[33mwarn[39m]: Couldn't find that user/channel/server combo.
+(2020-04-20 12:03:12) [[36mverbose[39m]: Created a message counter combo for: JonyDrake
