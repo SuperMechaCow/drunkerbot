@@ -8,6 +8,7 @@ const logger = require('../modules/log.js');
 const settings = require('../modules/settings.js');
 
 module.exports = (discordClient, message) => {
+
 	logger.verbose(`Logged in as ${discordClient.user.tag}!`);
 	discordClient.user.setPresence({
 		activity: {
@@ -29,6 +30,7 @@ module.exports = (discordClient, message) => {
 			}
 		}
 	});
+
 	db.get("SELECT * FROM t_botstats;", function(err, results) {
 		if (err) {
 			logger.error(err)
@@ -41,4 +43,7 @@ module.exports = (discordClient, message) => {
 			}
 		}
 	});
+
+	const playtest_handler = require('../modules/playtest_handler.js');
+	playtest_handler.setClient(discordClient);
 };
