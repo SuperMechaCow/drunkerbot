@@ -15,8 +15,8 @@ const settings = {
         "start": null,
         "end": null
     },
-    urlAPI: 'http://localhost:3000/api/v1/',
-    urlWEB: 'http://localhost:3000/',
+    urlAPI: 'http://127.0.0.1:3000/api/v1/',
+    urlWEB: 'http://127.0.0.1:3000/',
     urlGIT: 'http://www.github.com/SuperMechaCow/drunkerbot'
 }
 

@@ -31,7 +31,8 @@ expressRouter.get('/callback', catchAsync(async (req, res) => {
     const code = req.query.code;
     const creds = btoa(`${CLIENT_ID}:${CLIENT_SECRET}`);
     //console.log("CREDS:\n");
-    //console.log(creds);
+    // console.log(code);
+    // console.log(creds);
 
     const response = await fetch('https://discordapp.com/api/oauth2/token?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&grant_type=authorization_code&redirect_uri=' + redirect + '&code=' + code + '&scope=identify%20guilds', {
         method: 'POST',
@@ -42,7 +43,7 @@ expressRouter.get('/callback', catchAsync(async (req, res) => {
     });
 
     const json = await response.json();
-
+    console.log(json.access_token)
     res.redirect(`/login/?token=${json.access_token}`);
 
 }));
