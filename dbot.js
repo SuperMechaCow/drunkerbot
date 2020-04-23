@@ -5,7 +5,7 @@ const express = require('express'); //Express framework
 const app = express(); //New express application object
 const path = require('path'); //Express directory handling
 const fs = require('fs'); //Interacting with filesystem
-const Enmap = require("enmap");
+const enmap = require("enmap");
 const moment = require('moment'); //Handling datestamps and time formats
 const bodyParser = require('body-parser'); //Parses data from http request bodies
 const sqlite3 = require('sqlite3'); //Interfaces with sqlite3 database
@@ -145,7 +145,7 @@ fs.readdir('./routes/', (err, files) => {
 });
 
 //load commands here
-discordClient.commands = new Enmap();
+discordClient.commands = new enmap();
 commands.load(discordClient);
 
 /*
