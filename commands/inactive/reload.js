@@ -2,7 +2,7 @@ const Discord = require('discord.js'); //Load Discord library and create a new c
 const moment = require('moment'); //Handling datestamps and time formats
 const sqlite3 = require('sqlite3'); //Interfaces with sqlite3 database
 const db = new sqlite3.Database('data/botbase.db');
-const Enmap = require('Enmap');
+const enmap = require('enmap');
 
 //Custom Modules
 const logger = require('../modules/log.js');
@@ -17,7 +17,7 @@ exports.help = {
 
 exports.run = (discordClient, message, args) => {
     try {
-        discordClient.commands = new Enmap();
+        discordClient.commands = new enmap();
         commands.load(discordClient);
         message.channel.send("Reloaded commands.")
     } catch (e) {

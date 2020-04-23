@@ -27,7 +27,7 @@ exports.run = (discordClient, message, args) => {
 				'publishedfileids[0]': args[0]
 			}
 		}, function(err, httpResponse, body) {
-            //begining of callback
+			// beginning of callback
 			if (err) {
 				logger.error(err);
 			} else if (httpResponse.statusCode != 200) {
@@ -37,46 +37,35 @@ exports.run = (discordClient, message, args) => {
 					message.channel.send("There's a problem with the Steam Connection");
 				}
 			} else {
-                if (!moment(args[1] + args[2], "HH:mmDD/MM/YY").isValid()) {
-                    message.channel.send("Invalid time/date: <HH:mm> <DD/MM/YY> (24-hour format)");
-                } else {
-                    let time = moment(args[1] + args[2], "HH:mmDD/MM/YY").utcOffset(-300).unix();
-                    let data = JSON.parse(body).response.publishedfiledetails[0];
-                db.run(`INSERT INTO t_playtests (workshopID, time, userDID, guildDID, status, type) VALUES (\'${args[0]}\', \'${time}\', \'${message.author.id}\', \'${message.guild.id}\', \'pending\', \'${args[3]}\');`)
-                message.channel.send("Your playtest has been scheduled!!");
-                let tags = '';
-				data.tags.forEach((tag, index) => {
-					if (index) {
-						//tags += ', ';
+				if (!moment(args[1] + args[2], "HH:mmDD/MM/YY").isValid()) {
+					message.channel.send("Invalid time/date: <HH:mm> <DD/MM/YY> (24-hour format)");
+				} else {
+					let utcOS = 0;
+					if (moment().isDST()) {
+						utcOS = -240;
+					} else {
+						utcOS = -300;
 					}
-					tags += tag.tag;
-				});
-				var embed = new Discord.MessageEmbed()
-				embed.setTitle(data.title)
-					.addField("Description:", data.description)
-					.addField("Tags:", tags)
-					.setImage(data.preview_url)
-					.setURL('https://steamcommunity.com/sharedfiles/filedetails/?id=' + args[0]);
-                message.channel.send('', embed);
-            }
+					let time = moment(args[1] + args[2], "HH:mmDD/MM/YY").utcOffset(utcOS).unix();
+					let data = JSON.parse(body).response.publishedfiledetails[0];
+                    db.run(`INSERT INTO t_playtests (workshopID, time, userDID, guildDID, status, type) VALUES (\'${args[0]}\', \'${time}\', \'${message.author.id}\', \'${message.guild.id}\', \'pending\', \'${args[3]}\');`)
+					let tags = '';
+					data.tags.forEach((tag, index) => {
+						if (index) {
+							tags += ', ';
+						}
+						tags += tag.tag;
+					});
+					var embed = new Discord.MessageEmbed();
+					embed.setTitle("You have scheduled:")
+						.addField("Map Name:", data.title)
+						.addField("Description:", data.description)
+						.addField("Tags:", tags)
+						.setImage(data.preview_url)
+						.setURL('https://steamcommunity.com/sharedfiles/filedetails/?id=' + args[0]);
+					message.channel.send('', embed);
+				}
 			}
 		});
-    }
+	}
 }
-
-/*let data = JSON.parse(body).response.publishedfiledetails[0];
-				let tags = '';
-				data.tags.forEach((tag, index) => {
-					if (index) {
-						//tags += ', ';
-					}
-					tags += tag.tag;
-				});
-				var embed = new Discord.MessageEmbed()
-				embed.setTitle(data.title)
-					.addField("Description:", data.description)
-					.addField("Tags:", tags)
-					.setImage(data.preview_url)
-					.setURL('https://steamcommunity.com/sharedfiles/filedetails/?id=' + args[0]);
-                message.channel.send('', embed);
-                */

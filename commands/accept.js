@@ -8,21 +8,27 @@ const logger = require('../modules/log.js');
 const settings = require('../modules/settings.js');
 
 exports.help = {
-    description: "", // Information about this command
-    usage: settings.prefix + "", // How to use this command
-    docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/" // URL to more information about or the code for this command
+	description: "", // Information about this command
+	usage: settings.prefix + "", // How to use this command
+	docs: "https://github.com/SuperMechaCow/drunkerbot/blob/master/commands/" // URL to more information about or the code for this command
 }
 
+//TODO: Error if no results were found
+//TODO: Error if ID not provided in arguments
+//TODO: Error if invalidate workshop ID
+//TODO: Request worskhop info for embed
+//TODO: Embed for accepted message
+//TODO: Send embed to #playtest (or channel name in settings.js)
 exports.run = (discordClient, message, args) => {
-    //This is a command template
-    if (message.member.roles.cache.find(Role => Role.name === 'Perms')) {
-    db.get(`SELECT * FROM t_playtests WHERE id = ${args[0]};`, function(error, results) {
-        if(results.status == 'pending'){
-          db.run(`UPDATE t_playtests SET status = 'accepted' WHERE id = ${args[0]};`); 
-          message.channel.send(`Accepted playtest: ${results.workshopID}.`); 
-        }
-    });
-} else {
-    message.channel.send("You don't have the permissions to use this command!");
-}
+	//This is a command template
+	if (message.member.roles.cache.find(Role => Role.name === 'Perms')) {
+		db.get(`SELECT * FROM t_playtests WHERE id = ${args[0]};`, function(error, results) {
+			if (results.status == 'pending') {
+				db.run(`UPDATE t_playtests SET status = 'accepted' WHERE id = ${args[0]};`);
+				message.channel.send(`Accepted playtest: ${results.workshopID}.`);
+			}
+		});
+	} else {
+		message.channel.send("You don't have the permissions to use this command!");
+	}
 }

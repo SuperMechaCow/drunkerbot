@@ -16,13 +16,17 @@ const grabapi = require('../modules/grabapi.js');
 
 let route = '/';
 
+expressRouter.get('/steamgame', function(req, res) {
+    res.redirect(`steam://connect/${req.query.ip}:${req.query.port}`);
+});
+
 expressRouter.get('/', function(req, res) {
     res.render('index');
 });
 
 expressRouter.get('/login', function(req, res) {
 
-    if (req.query.token != undefined) {
+    if (req.query.token != 'undefined') {
         // res.header('Set-Cookie', 'authtoken=' + req.query.token);
         req.session.authtoken = req.query.token;
         res.redirect('/panel');
